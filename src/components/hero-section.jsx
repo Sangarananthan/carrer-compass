@@ -80,7 +80,7 @@ export default function HeroSection() {
               />
 
               {/* Course Carousel Overlay */}
-              {courses.length > 0 && (
+              {courses.length < 0 && (
                 <div className="absolute -bottom-6 -right-6 lg:-right-12">
                   <Card className="w-80 shadow-xl bg-white">
                     <CardContent className="p-6">
