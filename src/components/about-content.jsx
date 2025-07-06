@@ -5,7 +5,7 @@ export default function AboutContent() {
     <section className="py-16 lg:py-24">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-[0rem] md:mb-16">
             <div className="flex items-center justify-center mb-4">
               <Globe className="h-8 w-8 text-blue-800 mr-3" />
               <span className="text-blue-800 font-medium text-lg">
@@ -18,7 +18,7 @@ export default function AboutContent() {
             </h2>
           </div>
 
-          <div className="prose prose-lg max-w-none">
+          <div className="prose prose-lg max-w-none text-justify">
             <p className="text-xl leading-relaxed text-gray-700 mb-8">
               Career Compass is a skill-building academy dedicated to shaping
               future professionals through practical, beginner-friendly

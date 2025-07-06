@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, MessageCircle, Mail, GraduationCap } from "lucide-react";
 import EnrollmentModal from "./enrollment-modal.jsx";
+import Image from "next/image.js";
 
 export default function Header() {
   const [isMobile, setIsMobile] = useState(false);
@@ -75,7 +76,13 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center space-x-2">
-          <GraduationCap className="h-8 w-8 text-blue-600" />
+          <Image
+            src="/images/logo.png"
+            alt="Career Compass Logo"
+            width={40}
+            height={40}
+            className="rounded-full"
+          />
           <span className="text-xl font-bold text-gray-900">CareerCompass</span>
         </Link>
 
