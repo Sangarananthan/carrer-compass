@@ -30,11 +30,26 @@ export default function CoursesPage() {
     console.log("Session Data:", sessionData.session);
     setSession(sessionData.session);
   };
+  const fetchCategories = async () => {
+    const { data, error } = await supabase.from("Categories").select("*");
+    if (data && !error) {
+      setCategories(data);
+    }
+  };
+  const fetchCourses = async () => {
+    const { data, error } = await supabase.from("Courses").select("*");
+    if (data && !error) {
+      setCourses(data);
+    }
+    if (error) {
+      console.error("Error fetching courses:", error);
+    }
+  };
 
-  // Check for category filter from URL params
   useEffect(() => {
     intializeSession();
-
+    fetchCategories();
+    fetchCourses();
     const urlParams = new URLSearchParams(window.location.search);
     const categoryParam = urlParams.get("category");
     if (categoryParam) {
@@ -71,9 +86,11 @@ export default function CoursesPage() {
     setModalMode(category ? "edit" : "create");
     setCategoryModalOpen(true);
   };
-  const openCourseModal = () => {};
-  const handleSaveCategory = () => {};
-  const handleSaveCourse = () => {};
+  const openCourseModal = (course) => {
+    setSelectedCourse(course || null);
+    setModalMode(course ? "edit" : "create");
+    setCourseModalOpen(true);
+  };
   return (
     <>
       <CoursesHero />
@@ -166,7 +183,6 @@ export default function CoursesPage() {
           setCategoryModalOpen(false);
           setSelectedCategory(null);
         }}
-        onSave={handleSaveCategory}
         category={selectedCategory}
         mode={modalMode}
         session={session}
@@ -177,7 +193,6 @@ export default function CoursesPage() {
           setCourseModalOpen(false);
           setSelectedCourse(null);
         }}
-        onSave={handleSaveCourse}
         course={selectedCourse}
         mode={modalMode}
         categories={categories}

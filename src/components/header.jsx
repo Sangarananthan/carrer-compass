@@ -138,10 +138,10 @@ export default function Header() {
             alt="Career Compass Logo"
             width={40}
             height={40}
-            className="rounded-full "
+            className="rounded-full scale-110"
           />
           <span className="text-xl font-bold text-gray-900 tracking-tight">
-            CareerCompass
+            Career Compass
           </span>
         </Link>
 

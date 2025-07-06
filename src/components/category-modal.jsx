@@ -19,7 +19,6 @@ import { supabase } from "../utils/supabase-client";
 export default function CategoryModal({
   isOpen,
   onClose,
-  onSave,
   category,
     mode,
   session,
