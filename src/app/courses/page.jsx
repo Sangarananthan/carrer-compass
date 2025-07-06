@@ -1,20 +1,40 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, use } from "react";
 import CoursesHero from "@/components/courses-hero";
 import CourseSearchFilters from "@/components/course-search-filters";
 import CourseCard from "@/components/course-card";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import CategoryModal from "@/components/category-modal";
+import CourseModal from "@/components/course-modal";
+import { supabase } from "../../utils/supabase-client";
 
 export default function CoursesPage() {
   const dummyCourses = [];
   const dummyCategories = [];
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState(null);
   const [courses, setCourses] = useState(dummyCourses);
   const [categories, setCategories] = useState(dummyCategories);
 
+  // Modal states
+  const [categoryModalOpen, setCategoryModalOpen] = useState(false);
+  const [courseModalOpen, setCourseModalOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [modalMode, setModalMode] = useState("");
+  const [session, setSession] = useState(null);
+
+  const intializeSession = async () => {
+    const { data: sessionData } = await supabase.auth.getSession();
+    console.log("Session Data:", sessionData.session);
+    setSession(sessionData.session);
+  };
+
   // Check for category filter from URL params
   useEffect(() => {
+    intializeSession();
+
     const urlParams = new URLSearchParams(window.location.search);
     const categoryParam = urlParams.get("category");
     if (categoryParam) {
@@ -46,10 +66,17 @@ export default function CoursesPage() {
     console.log("Enroll in course:", course.id);
   };
 
+  const openCategoryModal = (category) => {
+    setSelectedCategory(category || null);
+    setModalMode(category ? "edit" : "create");
+    setCategoryModalOpen(true);
+  };
+  const openCourseModal = () => {};
+  const handleSaveCategory = () => {};
+  const handleSaveCourse = () => {};
   return (
     <>
       <CoursesHero />
-
       <CourseSearchFilters
         categories={categories}
         onSearchChange={setSearchTerm}
@@ -57,6 +84,25 @@ export default function CoursesPage() {
         selectedCategory={selectedCategory}
         searchTerm={searchTerm}
       />
+      {session?.user?.role === "authenticated" && (
+        <div className="flex w-fit gap-[1rem] items-center mb-8 p-4 ml-auto">
+          <Button
+            onClick={() => openCategoryModal()}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            <Plus className="h-4 w-4" />
+            Add Category
+          </Button>
+          <Button
+            onClick={() => openCourseModal()}
+            className="bg-blue-600 hover:bg-blue-700"
+            disabled={categories.length === 0}
+          >
+            <Plus className="h-4 w-4 " />
+            Add Course
+          </Button>
+        </div>
+      )}
 
       {/* Courses Grid */}
       <section className="py-16">
@@ -114,6 +160,29 @@ export default function CoursesPage() {
           )}
         </div>
       </section>
+      <CategoryModal
+        isOpen={categoryModalOpen}
+        onClose={() => {
+          setCategoryModalOpen(false);
+          setSelectedCategory(null);
+        }}
+        onSave={handleSaveCategory}
+        category={selectedCategory}
+        mode={modalMode}
+        session={session}
+      />
+      <CourseModal
+        isOpen={courseModalOpen}
+        onClose={() => {
+          setCourseModalOpen(false);
+          setSelectedCourse(null);
+        }}
+        onSave={handleSaveCourse}
+        course={selectedCourse}
+        mode={modalMode}
+        categories={categories}
+        session={session}
+      />
     </>
   );
 }

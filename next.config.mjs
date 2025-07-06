@@ -1,7 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["www.braindot.in"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "pvuvzoyhqkgjfgxwtoyo.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
+    ],
   },
 };
 
