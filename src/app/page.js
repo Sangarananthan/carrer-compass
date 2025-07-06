@@ -1,7 +1,16 @@
-import React from "react";
+import Header from "@/components/header";
+import HeroSection from "@/components/hero-section";
 
-const page = () => {
-  return <div>page</div>;
-};
+import Footer from "@/components/footer";
 
-export default page;
+export default function HomePage() {
+  return (
+    <div className="min-h-screen">
+      <Header />
+      <main>
+        <HeroSection />
+      </main>
+      <Footer />
+    </div>
+  );
+}

@@ -1,5 +1,5 @@
 "use client";
-import { supabase } from "../utils/supabase-client";
+import { supabase } from "@/utils/supabase-client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -36,7 +36,6 @@ const AuthForm = () => {
         console.error("Sign Up Error:", error.message);
         return;
       }
-    
     } else {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: formData.email,
@@ -71,7 +70,7 @@ const AuthForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#000000] text-white flex">
+    <div className="min-h-screen bg-[#ffffff] text-black flex">
       {/* Left Side - Branding */}
       <div className="hidden lg:flex lg:w-1/2 flex-col justify-center px-12 xl:px-20">
         <div className="max-w-md">
@@ -134,7 +133,7 @@ const AuthForm = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 text-white placeholder-gray-500"
+                  className="w-full px-4 py-3 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200  placeholder-gray-500"
                   placeholder="Enter your full name"
                 />
               </div>
@@ -153,7 +152,7 @@ const AuthForm = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 text-white placeholder-gray-500"
+                className="w-full px-4 py-3 bg-[#ffffff] border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 text-black placeholder-gray-500"
                 placeholder="Enter your email"
               />
             </div>
@@ -171,7 +170,7 @@ const AuthForm = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 text-white placeholder-gray-500"
+                className="w-full px-4 py-3  border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200  placeholder-gray-500"
                 placeholder="Enter your password"
               />
             </div>
