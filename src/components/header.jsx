@@ -7,18 +7,11 @@ import { Menu, MessageCircle, Mail, GraduationCap } from "lucide-react";
 import EnrollmentModal from "./enrollment-modal.jsx";
 
 export default function Header() {
-  const [isAdmin, setIsAdmin] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showEnrollmentModal, setShowEnrollmentModal] = useState(false);
 
-  useEffect(() => {
-    // Check if admin is logged in
-    const token = document.cookie
-      .split(";")
-      .find((c) => c.trim().startsWith("admin_token="));
-    setIsAdmin(!!token);
 
-    // Check screen size
+  useEffect(() => {
     const checkScreenSize = () => {
       setIsMobile(window.innerWidth < 768);
     };
@@ -74,34 +67,24 @@ export default function Header() {
       >
         Contact Us
       </Link>
-      {isAdmin && (
-        <Link
-          href="/manage"
-          className="text-sm font-medium hover:text-blue-600 transition-colors"
-        >
-          Manage
-        </Link>
-      )}
+     
     </>
   );
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        {/* Logo */}
         <Link href="/" className="flex items-center space-x-2">
           <GraduationCap className="h-8 w-8 text-blue-600" />
           <span className="text-xl font-bold text-gray-900">CareerCompass</span>
         </Link>
 
-        {/* Desktop Navigation */}
         {!isMobile && (
           <nav className="hidden md:flex items-center space-x-8">
             <NavItems />
           </nav>
         )}
 
-        {/* Right Side Actions */}
         <div className="flex items-center space-x-4">
           {!isMobile && (
             <>
@@ -139,7 +122,10 @@ export default function Header() {
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+              <SheetContent
+                side="right"
+                className="w-[300px] p-[1rem] sm:w-[400px]"
+              >
                 <nav className="flex flex-col space-y-4 mt-8">
                   <NavItems />
                   <div className="flex space-x-4 pt-4 border-t">
