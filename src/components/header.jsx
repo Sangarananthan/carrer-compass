@@ -173,13 +173,15 @@ export default function Header() {
             </>
           )}
 
-          <Button
-            onClick={() => setShowEnrollmentModal(true)}
-            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-2 rounded-full font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
-          >
-            <GraduationCap className="h-4 w-4 mr-2" />
-            Enroll Now
-          </Button>
+          {!isMobile && (
+            <Button
+              onClick={() => setShowEnrollmentModal(true)}
+              className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-2 rounded-full font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+            >
+              <GraduationCap className="h-4 w-4 mr-2" />
+              Enroll Now
+            </Button>
+          )}
 
           {/* Mobile Menu */}
           {isMobile && (
