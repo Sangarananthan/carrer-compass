@@ -46,11 +46,11 @@ export default function CategoriesSection() {
             >
               <CardContent className="p-0  relative">
                 {/* Background gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-purple-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0  from-blue-600/5 to-purple-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                 {/* Image section */}
-                <div className="relative h-48 bg-gradient-to-br  flex items-center justify-center overflow-hidden">
-                  <div className="absolute inset-0  group-hover:from-blue-500/30 group-hover:to-purple-500/30 transition-all duration-300" />
+                <div className="relative h-48   flex items-center justify-center overflow-hidden">
+                  <div className="absolute inset-0   transition-all duration-300" />
                   <Image
                     src={
                       `${process.env.NEXT_PUBLIC_SUPABASE_URL}/${process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET}/${category.image_url}` ||
@@ -58,7 +58,7 @@ export default function CategoriesSection() {
                     }
                     alt={category.name}
                    fill
-                    className="object-cover rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300 relative z-10"
+                    className="object-cover rounded-2xl  group-hover:scale-110 transition-transform duration-300 relative z-10"
                   />
 
                   {/* Floating decoration */}

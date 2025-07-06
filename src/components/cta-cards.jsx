@@ -6,10 +6,9 @@ import { Award, TrendingUp } from "lucide-react";
 
 export default function CTACards() {
   return (
-    <section className="py-12 bg-slate-50">
-      <div className="container mx-auto px-6">
+    <section className="py-[1rem] bg-slate-50">
+      <div className="container mx-auto px-[1rem]">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Earn Certificate Card */}
           <Card className="group bg-white border border-slate-200/60 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
             <CardContent className="p-6 sm:p-8 relative">
               <div className="flex items-start justify-between mb-6">
@@ -64,7 +63,6 @@ export default function CTACards() {
             </CardContent>
           </Card>
 
-          {/* Best Rated Courses Card */}
           <Card className="group bg-white border border-slate-200/60 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
             <CardContent className="p-6 sm:p-8 relative">
               <div className="flex items-start justify-between mb-6">

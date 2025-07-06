@@ -5,8 +5,8 @@ import { ArrowRight } from "lucide-react";
 
 export default function HelpSection() {
   return (
-    <section className="p-6 w-full  mx-auto">
-      <div className="relative bg-neutral-900 rounded-2xl p-12 border border-neutral-800 overflow-hidden">
+    <section className="p-[1rem] w-full  mx-auto">
+      <div className="relative bg-neutral-900 rounded-2xl p-[1.7rem] border border-neutral-800 overflow-hidden">
         <div className="absolute inset-0 opacity-5 md:opacity-20">
           <div className="absolute -top-32 -left-32 w-[500px] h-[500px] border border-white rounded-full"></div>
           <div className="absolute -bottom-16 -right-16 w-80 h-80 border-7 border-white rounded-full"></div>

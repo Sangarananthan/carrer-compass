@@ -46,7 +46,7 @@ export default function HeroSection() {
 
   return (
     <section className="relative min-h-[600px] bg-gradient-to-br from-blue-50 to-indigo-100 overflow-hidden">
-      <div className="container mx-auto px-4 py-12 lg:py-20">
+      <div className="container mx-auto px-4 py-6 lg:py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <div className="space-y-8">
