@@ -23,7 +23,6 @@ export default function ContactForm() {
     name: "",
     email: "",
     mobile: "",
-    reason: "",
     message: "",
   });
   const [loading, setLoading] = useState(false);
@@ -52,7 +51,6 @@ export default function ContactForm() {
           name: "",
           email: "",
           mobile: "",
-          reason: "",
           message: "",
         });
         setTimeout(() => setSuccess(false), 5000);

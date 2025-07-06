@@ -3,11 +3,11 @@ import Breadcrumb from "./breadcrumb";
 
 export default function CoursesHero() {
   return (
-    <section className="relative h-[400px] lg:h-[500px] overflow-hidden">
+    <section className="relative h-[300px] lg:h-[400px] overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
-          src="/images/campus-breadcrumb.jpg"
+          src="/images/courses.png"
           alt="Campus students"
           fill
           className="object-cover"

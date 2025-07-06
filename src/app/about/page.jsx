@@ -6,8 +6,8 @@ export default function AboutPage() {
   return (
     <>
       <AboutHero />
-      <AboutFeatures />
       <AboutContent />
+      <AboutFeatures />
     </>
   );
 }
