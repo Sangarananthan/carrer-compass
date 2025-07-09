@@ -20,7 +20,6 @@ export default function CourseSearchFilters({
     <div className="bg-white border-b border-gray-200 sticky top-16 z-40">
       <div className="container mx-auto px-4 py-6">
         <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
-          {/* Search Bar */}
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
@@ -32,7 +31,6 @@ export default function CourseSearchFilters({
             />
           </div>
 
-          {/* Filter Toggle (Mobile) */}
           <Button
             variant="outline"
             onClick={() => setShowFilters(!showFilters)}
@@ -42,7 +40,6 @@ export default function CourseSearchFilters({
             Filters
           </Button>
 
-          {/* Category Filters */}
           <div className={`flex flex-wrap gap-2 ${showFilters ? "block" : "hidden lg:flex"} w-full lg:w-auto`}>
             <Button
               variant={selectedCategory === null ? "default" : "outline"}
@@ -66,20 +63,12 @@ export default function CourseSearchFilters({
           </div>
         </div>
 
-        {/* Active Filters */}
         {(selectedCategory || searchTerm) && (
           <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-gray-100">
             <span className="text-sm text-gray-600 mr-2">Active filters:</span>
-            {searchTerm && (
-              <Badge variant="secondary" className="flex items-center gap-1">
-                Search: "{searchTerm}"
-                <X className="h-3 w-3 cursor-pointer" onClick={() => onSearchChange("")} />
-              </Badge>
-            )}
             {selectedCategory && (
               <Badge variant="secondary" className="flex items-center gap-1">
                 {categories.find((c) => c.id === selectedCategory)?.name}
-                <X className="h-3 w-3 cursor-pointer" onClick={() => onCategoryFilter(null)} />
               </Badge>
             )}
           </div>

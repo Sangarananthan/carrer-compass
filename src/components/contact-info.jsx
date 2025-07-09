@@ -35,7 +35,6 @@ export default function ContactInfo() {
       </div>
 
       <div className="grid gap-6">
-        {/* Email */}
         <Card
           className="hover:shadow-lg transition-shadow cursor-pointer"
           onClick={handleEmailClick}
@@ -60,7 +59,6 @@ export default function ContactInfo() {
           </CardContent>
         </Card>
 
-        {/* WhatsApp */}
         <Card
           className="hover:shadow-lg transition-shadow cursor-pointer"
           onClick={handleWhatsAppClick}
@@ -83,7 +81,6 @@ export default function ContactInfo() {
           </CardContent>
         </Card>
 
-        {/* Office Hours */}
         <Card className="hover:shadow-lg transition-shadow">
           <CardContent className="py-2 px-5">
             <div className="flex items-start space-x-4">

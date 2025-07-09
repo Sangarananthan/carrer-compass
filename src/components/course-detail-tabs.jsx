@@ -27,7 +27,6 @@ export default function CourseDetailTabs({ course, reviews, onAddReview }) {
 
   return (
     <div className="space-y-8">
-      {/* Tab Navigation */}
       <div className="border-b border-gray-200">
         <nav className="flex space-x-8">
           {tabs.map((tab) => (
@@ -47,7 +46,6 @@ export default function CourseDetailTabs({ course, reviews, onAddReview }) {
         </nav>
       </div>
 
-      {/* Tab Content */}
       <div className="min-h-[400px]">
         {activeTab === "info" && (
           <div className="space-y-8">
@@ -151,7 +149,6 @@ export default function CourseDetailTabs({ course, reviews, onAddReview }) {
               </Button>
             </div>
 
-            {/* Add Review Form */}
             {showReviewForm && (
               <Card>
                 <CardContent className="p-6">
@@ -204,7 +201,6 @@ export default function CourseDetailTabs({ course, reviews, onAddReview }) {
               </Card>
             )}
 
-            {/* Reviews List */}
             <div className="space-y-4">
               {reviews.length > 0 ? (
                 reviews.map((review) => (

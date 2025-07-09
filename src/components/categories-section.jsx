@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
@@ -45,10 +44,7 @@ export default function CategoriesSection() {
               onClick={() => handleCategoryClick(category.id)}
             >
               <CardContent className="p-0  relative">
-                {/* Background gradient overlay */}
                 <div className="absolute inset-0  from-blue-600/5 to-purple-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                {/* Image section */}
                 <div className="relative h-48   flex items-center justify-center overflow-hidden">
                   <div className="absolute inset-0   transition-all duration-300" />
                   <Image
@@ -60,14 +56,11 @@ export default function CategoriesSection() {
                    fill
                     className="object-cover rounded-2xl  group-hover:scale-110 transition-transform duration-300 relative z-10"
                   />
-
-                  {/* Floating decoration */}
                   <div className="absolute top-4 right-4 w-6 h-6 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
                     <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                   </div>
                 </div>
 
-                {/* Content section */}
                 <div className="p-6 space-y-3 relative z-10">
                   <div className="flex items-center justify-between">
                     <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-700 transition-colors duration-300">
@@ -89,12 +82,9 @@ export default function CategoriesSection() {
                       </svg>
                     </div>
                   </div>
-
                   <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
                     {category.description}
                   </p>
-
-                
                 </div>
               </CardContent>
             </Card>

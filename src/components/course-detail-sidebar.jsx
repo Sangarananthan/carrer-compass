@@ -28,13 +28,11 @@ export default function CourseDetailSidebar({ course, onEnroll }) {
 
   return (
     <div className="space-y-6">
-      {/* Enrollment Card */}
       <Card className="sticky top-24">
         <CardHeader>
           <CardTitle className="text-xl">Enroll in This Course</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Course Details */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-gray-600">Duration</span>
@@ -91,7 +89,6 @@ export default function CourseDetailSidebar({ course, onEnroll }) {
             </Badge>
           </div>
 
-          {/* Action Buttons */}
           <div className="space-y-3">
             <Button onClick={handleEnroll} className="w-full bg-blue-600 hover:bg-blue-700 text-lg py-3">
               Enquire Now
@@ -119,7 +116,6 @@ export default function CourseDetailSidebar({ course, onEnroll }) {
         </CardContent>
       </Card>
 
-      {/* Course Highlights */}
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Course Highlights</CardTitle>

@@ -4,7 +4,6 @@ import Breadcrumb from "./breadcrumb";
 export default function CoursesHero() {
   return (
     <section className="relative h-[300px] lg:h-[400px] overflow-hidden">
-      {/* Background Image */}
       <div className="absolute inset-0">
         <Image
           src="/images/courses.png"
@@ -13,11 +12,9 @@ export default function CoursesHero() {
           className="object-cover"
           priority
         />
-        {/* Overlay */}
         <div className="absolute inset-0 bg-black/50" />
       </div>
 
-      {/* Content */}
       <div className="relative z-10 container mx-auto px-4 h-full flex flex-col justify-center">
         <div className="mb-6">
           <Breadcrumb items={[{ label: "Courses" }]} />

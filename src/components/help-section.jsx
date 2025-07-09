@@ -13,7 +13,6 @@ export default function HelpSection() {
           <div className="absolute -bottom-28 -right-28 w-[450px] h-[450px] border border-white rounded-full"></div>
         </div>
         <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
-          {/* Content */}
           <div>
             <h3 className="text-4xl font-semibold text-white mb-3 tracking-tight">
               Find Your Course
@@ -23,7 +22,6 @@ export default function HelpSection() {
             </p>
           </div>
 
-          {/* CTA Button */}
           <Button
             size="lg"
             className="bg-white hover:bg-neutral-100 text-black font-medium px-8 py-6 rounded-xl transition-all duration-200 hover:scale-[1.02] group"

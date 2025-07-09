@@ -9,9 +9,8 @@ import { Star, Clock, Users } from "lucide-react"
 export default function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [courses, setCourses] = useState([])
-  // Sample courses for carousel
+
   useEffect(() => {
-    // In a real app, fetch from Supabase
     setCourses([
       {
         id: "1",
@@ -48,7 +47,6 @@ export default function HeroSection() {
     <section className="relative min-h-[600px] bg-gradient-to-br from-blue-50 to-indigo-100 overflow-hidden">
       <div className="container mx-auto px-4 py-6 lg:py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left Content */}
           <div className="space-y-8">
             <div className="space-y-4">
               <p className="text-blue-600 font-medium text-lg">Get trained by Industry Experts</p>
@@ -67,7 +65,6 @@ export default function HeroSection() {
             </Button>
           </div>
 
-          {/* Right Content - Hero Image with Course Carousel */}
           <div className="relative">
             <div className="relative">
               <Image
@@ -78,8 +75,6 @@ export default function HeroSection() {
                 className="w-full h-auto rounded-2xl"
                 priority
               />
-
-              {/* Course Carousel Overlay */}
               {courses.length < 0 && (
                 <div className="absolute -bottom-6 -right-6 lg:-right-12">
                   <Card className="w-80 shadow-xl bg-white">

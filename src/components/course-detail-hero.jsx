@@ -11,7 +11,6 @@ export default function CourseDetailHero({ course }) {
   return (
     <section className="relative bg-gradient-to-br from-blue-50 to-indigo-100 py-16">
       <div className="container mx-auto px-4">
-        {/* Breadcrumb */}
         <div className="mb-8">
           <Breadcrumb
             items={[
@@ -23,7 +22,6 @@ export default function CourseDetailHero({ course }) {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left Content */}
           <div className="space-y-6">
             <div className="flex flex-wrap gap-2 mb-4">
               <Badge className="bg-blue-600 text-white">{course.category.name}</Badge>
@@ -34,7 +32,6 @@ export default function CourseDetailHero({ course }) {
 
             <p className="text-xl text-gray-600 leading-relaxed">{course.overview}</p>
 
-            {/* Course Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="flex items-center space-x-2 text-gray-600">
                 <Clock className="h-5 w-5 text-blue-500" />
@@ -66,7 +63,6 @@ export default function CourseDetailHero({ course }) {
               </div>
             </div>
 
-            {/* Rating */}
             <div className="flex items-center space-x-4">
               <div className="flex items-center">
                 <div className="flex text-yellow-400">
@@ -83,7 +79,6 @@ export default function CourseDetailHero({ course }) {
             </div>
           </div>
 
-          {/* Right Content - Course Image */}
           <div className="relative">
             <div className="relative h-80 lg:h-96 rounded-2xl overflow-hidden shadow-2xl">
               <Image

@@ -20,8 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { X, Loader2, Plus, Trash2, ImageIcon, Upload } from "lucide-react";
-import Image from "next/image";
+import { Loader2, Plus, Trash2, ImageIcon, Upload } from "lucide-react";
 import { supabase } from "../utils/supabase-client";
 
 export default function CourseModal({
@@ -31,7 +30,7 @@ export default function CourseModal({
   course,
   mode,
   categories,
-  session
+  session,
 }) {
   const initialState = {
     category_id: "",
@@ -44,23 +43,53 @@ export default function CourseModal({
     syllabus: [""],
     is_popular: false,
   };
+
   const [formData, setFormData] = useState(initialState);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [imagePreview, setImagePreview] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = useRef(null);
-
-  // Initialize form data when modal opens or course changes
   useEffect(() => {
     if (isOpen) {
       if (mode === "edit" && course) {
-        setFormData(course);
-        setImagePreview(course.image_url);
+        let syllabusArray = [];
+        if (course.syllabus) {
+          if (Array.isArray(course.syllabus)) {
+            syllabusArray = course.syllabus.filter(
+              (item) => item && item.trim() !== ""
+            );
+          } else if (typeof course.syllabus === "string") {
+            try {
+              syllabusArray = JSON.parse(course.syllabus);
+            } catch (e) {
+              syllabusArray = [course.syllabus];
+            }
+          }
+        }
+
+        if (syllabusArray.length === 0) {
+          syllabusArray = [""];
+        }
+
+        const editFormData = {
+          ...course,
+          category_id: course.category_id?.toString() || "",
+          syllabus: syllabusArray,
+          duration_months: course.duration_months || 1,
+          is_popular: course.is_popular || false,
+        };
+
+        setFormData(editFormData);
+        setImagePreview(
+          `${process.env.NEXT_PUBLIC_SUPABASE_URL}/${process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET}/${course.image_url}` ||
+            ""
+        );
       } else {
         setFormData(initialState);
         setImagePreview("");
       }
+      setSelectedFile(null);
       setError("");
     }
   }, [isOpen, course, mode]);
@@ -81,6 +110,7 @@ export default function CourseModal({
       setFormData((prev) => ({ ...prev, syllabus: newSyllabus }));
     }
   };
+
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (field === "image_url" && typeof value === "string") {
@@ -139,14 +169,20 @@ export default function CourseModal({
       if (formData.duration_months < 1 || formData.duration_months > 24) {
         throw new Error("Duration must be between 1 and 24 months");
       }
+
       const filteredSyllabus = formData.syllabus.filter(
         (item) => item.trim() !== ""
       );
-      const courseData = {
+
+      const { category, ...cleanCourseData } = {
         ...formData,
         syllabus: filteredSyllabus,
         email: session?.user?.email,
       };
+      const courseData = cleanCourseData;
+
+      let imageUrl = formData.image_url;
+
       if (selectedFile) {
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from("career-course")
@@ -154,20 +190,38 @@ export default function CourseModal({
             cacheControl: "3600",
             upsert: true,
           });
+
         if (uploadError) {
-          console.error("Error uploading file:", uploadError);
+          throw new Error("Failed to upload image");
         }
-        courseData.image_url = uploadData.path;
+
+        imageUrl = uploadData.path;
       }
-      const { error } = await supabase
-        .from("Courses")
-        .insert(courseData)
-        .select();
-      if (error) {
-        console.error("Error saving category :", error);
+
+      courseData.image_url = imageUrl;
+      let result;
+      if (mode === "edit" && course) {
+        result = await supabase
+          .from("Courses")
+          .update(courseData)
+          .eq("id", course.id)
+          .select();
+      } else {
+        result = await supabase.from("Courses").insert(courseData).select();
       }
+
+      if (result.error) {
+        throw new Error(result.error.message);
+      }
+
+      console.log("Course saved successfully:", result.data);
       onClose();
+
+      if (onSave) {
+        onSave(result.data[0]);
+      }
     } catch (err) {
+      console.error("Error saving course:", err);
       setError(err instanceof Error ? err.message : "Failed to save course");
     } finally {
       setLoading(false);
@@ -179,18 +233,20 @@ export default function CourseModal({
     setError("");
     setFormData(initialState);
     setImagePreview("");
+    setSelectedFile(null);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={resetAndClose}>
-      <DialogContent className="min-w-[70%] max-h-[90vh] max-w-[90%] p-4 overflow-y-auto">
+      <DialogContent className="min-w-[70%] max-h-[90vh] max-w-[90%] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-gray-900 flex items-center justify-between">
             {mode === "create" ? "Add New Course" : "Edit Course"}
+           
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6 p-6">
+        <form onSubmit={handleSubmit} className="space-y-6 p-1">
           {error && (
             <Alert variant="destructive">
               <AlertDescription>{error}</AlertDescription>
@@ -198,14 +254,13 @@ export default function CourseModal({
           )}
 
           <div className="grid md:grid-cols-2 gap-6">
-            {/* Left Column */}
             <div className="space-y-6">
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-gray-700">
                   Course Image
                 </Label>
 
-                <div className="space-y-3">
+                <div className="">
                   {!selectedFile && !imagePreview ? (
                     <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
                       <input
@@ -241,12 +296,12 @@ export default function CourseModal({
                             {imagePreview ? (
                               <img
                                 src={imagePreview}
-                                alt="Category preview"
+                                alt="Course preview"
                                 className="w-full h-full object-cover"
                                 onError={() => setImagePreview("")}
                               />
                             ) : (
-                              <Image className="h-6 w-6 text-gray-400" />
+                              <ImageIcon className="h-6 w-6 text-gray-400" />
                             )}
                           </div>
                         </div>
@@ -257,7 +312,7 @@ export default function CourseModal({
                           <p className="text-xs text-gray-500">
                             {selectedFile
                               ? `${(selectedFile.size / 1024).toFixed(1)} KB`
-                              : "This is how the category image will appear"}
+                              : "This is how the course image will appear"}
                           </p>
                         </div>
                         <Button
@@ -275,7 +330,6 @@ export default function CourseModal({
                 </div>
               </div>
 
-{/* Course Name */}
               <div className="space-y-2">
                 <Label
                   htmlFor="name"
@@ -293,9 +347,9 @@ export default function CourseModal({
                   className="h-12"
                 />
               </div>
-              <div className="flex items-center justify-between">
-                {/* Category */}
-                <div className="space-y-2">
+
+              <div className="flex items-center justify-center gap-1">
+                <div className="space-y-2 w-1/2">
                   <Label
                     htmlFor="category"
                     className="text-sm font-medium text-gray-700"
@@ -314,15 +368,18 @@ export default function CourseModal({
                     </SelectTrigger>
                     <SelectContent>
                       {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.id}>
+                        <SelectItem
+                          key={category.id}
+                          value={category.id.toString()}
+                        >
                           {category.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
-                {/* Mode */}
-                <div className="space-y-2">
+
+                <div className="space-y-2 w-1/2">
                   <Label
                     htmlFor="mode"
                     className="text-sm font-medium text-gray-700"
@@ -342,9 +399,10 @@ export default function CourseModal({
                     </SelectContent>
                   </Select>
                 </div>
+              </div>
 
-                {/* Language */}
-                <div className="space-y-2">
+              <div className="flex items-center justify-center gap-1">
+                <div className="space-y-2 w-1/2 -mb-2">
                   <Label
                     htmlFor="language"
                     className="text-sm font-medium text-gray-700"
@@ -367,37 +425,34 @@ export default function CourseModal({
                     </SelectContent>
                   </Select>
                 </div>
-              </div>
 
-              {/* Duration */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="duration"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Duration (Months) *
-                </Label>
-                <Input
-                  id="duration"
-                  type="number"
-                  min="1"
-                  max="24"
-                  value={formData.duration_months}
-                  onChange={(e) =>
-                    handleInputChange(
-                      "duration_months",
-                      Number.parseInt(e.target.value) || 1
-                    )
-                  }
-                  className="h-12"
-                  required
-                />
+                <div className="space-y-2 w-1/2">
+                  <Label
+                    htmlFor="duration"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Duration (Months) *
+                  </Label>
+                  <Input
+                    id="duration"
+                    type="number"
+                    min="1"
+                    max="24"
+                    value={formData.duration_months}
+                    onChange={(e) =>
+                      handleInputChange(
+                        "duration_months",
+                        Number.parseInt(e.target.value) || 1
+                      )
+                    }
+                    className="h-12"
+                    required
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Right Column */}
             <div className="space-y-6">
-              {/* Syllabus */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <Label className="text-sm font-medium text-gray-700">
@@ -446,7 +501,7 @@ export default function CourseModal({
                   ))}
                 </div>
               </div>
-              {/* Overview */}
+
               <div className="space-y-2">
                 <Label
                   htmlFor="overview"
@@ -467,7 +522,6 @@ export default function CourseModal({
                 />
               </div>
 
-              {/* Popular Course Toggle */}
               <div className="flex items-center justify-between p-4 bg-orange-50 rounded-lg border border-orange-200">
                 <div className="space-y-1">
                   <Label
@@ -491,7 +545,6 @@ export default function CourseModal({
             </div>
           </div>
 
-          {/* Form Actions */}
           <div className="flex space-x-3 pt-6 border-t border-gray-200">
             <Button
               type="button"

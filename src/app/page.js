@@ -10,7 +10,6 @@ export default function HomePage() {
       <HeroSection />
       <AboutFeatures />
       <CategoriesSection />
-    
       <HelpSection />
       <CTACards />
     </>

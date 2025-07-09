@@ -71,7 +71,6 @@ const AuthForm = () => {
 
   return (
     <div className="min-h-screen bg-[#ffffff] text-black flex">
-      {/* Left Side - Branding */}
       <div className="hidden lg:flex lg:w-1/2 flex-col justify-center px-12 xl:px-20">
         <div className="max-w-md">
           <div className="w-16 h-16 bg-gradient-to-br relative  mb-8 flex items-center justify-center">
@@ -93,10 +92,8 @@ const AuthForm = () => {
         </div>
       </div>
 
-      {/* Right Side - Form */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center px-6 sm:px-12 lg:px-16 xl:px-24">
         <div className="max-w-md w-full mx-auto">
-          {/* Mobile Logo */}
           <div className="lg:hidden mb-8 text-center">
             <div className="w-16 h-16 mx-auto bg-gradient-to-br relative  mb-8 flex items-center justify-center">
               <Image
@@ -206,7 +203,6 @@ const AuthForm = () => {
             </p>
           </div>
 
-          {/* Footer Links */}
           <div className="mt-12 flex justify-center space-x-6 text-sm text-gray-500">
             <a
               href="#"

@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect, useRef } from "react";
 import {
   Dialog,
@@ -270,7 +269,6 @@ export default function CategoryModal({
             </div>
           </div>
 
-          {/* Show on Home */}
           <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200">
             <div className="space-y-1">
               <Label
@@ -293,7 +291,6 @@ export default function CategoryModal({
             />
           </div>
 
-          {/* Form Actions */}
           <div className="flex space-x-3 pt-6 border-t border-gray-200">
             <Button
               type="button"

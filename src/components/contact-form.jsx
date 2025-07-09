@@ -16,8 +16,6 @@ import {
   Phone,
   } from "lucide-react";
 
-
-
 export default function ContactForm() {
   const [formData, setFormData] = useState({
     name: "",
@@ -105,7 +103,6 @@ export default function ContactForm() {
             </Alert>
           )}
 
-          {/* Name Field */}
           <div className="space-y-2">
             <Label
               htmlFor="name"
@@ -125,7 +122,6 @@ export default function ContactForm() {
             />
           </div>
 
-          {/* Email and Mobile Row */}
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label
@@ -167,7 +163,6 @@ export default function ContactForm() {
           </div>
 
          
-          {/* Message Field */}
           <div className="space-y-2">
             <Label
               htmlFor="message"
@@ -186,7 +181,6 @@ export default function ContactForm() {
             />
           </div>
 
-          {/* Submit Button */}
           <Button
             type="submit"
             className="w-full bg-blue-600 hover:bg-blue-700 text-white text-lg py-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02]"
@@ -205,7 +199,6 @@ export default function ContactForm() {
             )}
           </Button>
 
-          {/* Privacy Note */}
           <p className="text-xs text-gray-500 text-center">
             By submitting this form, you agree to our privacy policy. We'll only
             use your information to respond to your inquiry.

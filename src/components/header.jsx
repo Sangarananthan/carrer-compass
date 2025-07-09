@@ -183,7 +183,6 @@ export default function Header() {
             </Button>
           )}
 
-          {/* Mobile Menu */}
           {isMobile && (
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <SheetTrigger asChild>
@@ -202,7 +201,6 @@ export default function Header() {
                 <nav className="flex flex-col p-6 space-y-1">
                   <NavItems mobile={true} />
 
-                  {/* Contact buttons in mobile */}
                   <div className="pt-6 space-y-3">
                     <div className="text-sm font-medium text-gray-500 uppercase tracking-wide">
                       Get in Touch
@@ -231,7 +229,6 @@ export default function Header() {
                     </Button>
                   </div>
 
-                  {/* Enroll button in mobile */}
                   <div className="pt-4">
                     <Button
                       onClick={() => {
