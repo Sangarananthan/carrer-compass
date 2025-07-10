@@ -75,29 +75,7 @@ export default function CourseDetailTabs({ course, reviews, onAddReview }) {
               </div>
             </div>
 
-            <div>
-              <h4 className="text-xl font-semibold text-gray-900 mb-4">Course Features</h4>
-              <div className="grid md:grid-cols-3 gap-4">
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <div className="text-2xl font-bold text-blue-600 mb-2">{course.syllabus?.length || 5}+</div>
-                    <div className="text-sm text-gray-600">Modules</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <div className="text-2xl font-bold text-green-600 mb-2">24/7</div>
-                    <div className="text-sm text-gray-600">Support</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <div className="text-2xl font-bold text-purple-600 mb-2">100%</div>
-                    <div className="text-sm text-gray-600">Practical</div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
+           
           </div>
         )}
 

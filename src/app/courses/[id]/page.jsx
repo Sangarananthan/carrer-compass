@@ -7,149 +7,62 @@ import CourseDetailHero from "@/components/course-detail-hero";
 import CourseDetailTabs from "@/components/course-detail-tabs";
 import CourseDetailSidebar from "@/components/course-detail-sidebar";
 import Footer from "@/components/footer";
+import { supabase } from "@/utils/supabase-client";
 
 export default function CourseDetailPage() {
   const params = useParams();
   const courseId = params.id;
+
   const [course, setCourse] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
-  const dummyCourses = [];
-  useEffect(() => {
-    // Find course by ID
-    const foundCourse = dummyCourses.find((c) => c.id === courseId);
-    if (foundCourse) {
-      // Add syllabus to the course
-      const courseWithSyllabus = {
-        ...foundCourse,
-        syllabus: getSyllabusForCourse(foundCourse.name),
-      };
-      setCourse(courseWithSyllabus);
 
-      // Load dummy reviews
-      setReviews([
-        {
-          id: "1",
-          name: "Priya Sharma",
-          review:
-            "Excellent course! The instructor was very knowledgeable and the content was well-structured.",
-          rating: 5,
-          created_at: "2024-01-15",
-        },
-        {
-          id: "2",
-          name: "Rajesh Kumar",
-          review:
-            "Great practical approach. I learned a lot and feel confident about implementing these skills.",
-          rating: 5,
-          created_at: "2024-01-10",
-        },
-        {
-          id: "3",
-          name: "Anitha Reddy",
-          review:
-            "Very helpful course with good support from instructors. Highly recommended!",
-          rating: 4,
-          created_at: "2024-01-05",
-        },
-      ]);
+  const fetchCourseDetails = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("Courses")
+        .select("*, category:Categories(*)")
+        .eq("id", courseId)
+        .single();
+
+      if (error) {
+        console.error("Error fetching course:", error);
+      } else if (data) {
+        setCourse(data);
+
+        // Later replace with Supabase review fetching
+        setReviews([
+          {
+            id: "1",
+            name: "Priya Sharma",
+            review:
+              "Excellent course! The instructor was very knowledgeable and the content was well-structured.",
+            rating: 5,
+            created_at: "2024-01-15",
+          },
+          {
+            id: "2",
+            name: "Rajesh Kumar",
+            review:
+              "Great practical approach. I learned a lot and feel confident about implementing these skills.",
+            rating: 5,
+            created_at: "2024-01-10",
+          },
+        ]);
+      }
+    } catch (err) {
+      console.error("Error fetching course:", err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  }, [courseId]);
-
-  const getSyllabusForCourse = (courseName) => {
-    const syllabusMap = {
-      "C and C++ Programming": [
-        "C Basics",
-        "Data Types & Variables",
-        "Control Structures",
-        "Functions",
-        "Pointers",
-        "Object-Oriented Programming",
-      ],
-      "Python for Beginners": [
-        "Python Basics",
-        "Data Types",
-        "Control Structures",
-        "Functions",
-        "Object-Oriented Programming",
-        "Libraries & Modules",
-      ],
-      "Java Development": [
-        "Java Fundamentals",
-        "OOP Concepts",
-        "Collections Framework",
-        "Exception Handling",
-        "Spring Framework",
-        "Database Integration",
-      ],
-      "SQL Database Management": [
-        "Database Basics",
-        "SQL Queries",
-        "Joins & Relationships",
-        "Stored Procedures",
-        "Database Design",
-        "Performance Optimization",
-      ],
-      "CCNA Certification": [
-        "Network Basics",
-        "IP Addressing",
-        "Switch Security",
-        "Router Configuration",
-        "IP Services",
-        "Network Troubleshooting",
-      ],
-      "Linux System Administration": [
-        "Linux Basics",
-        "Command Line",
-        "File Systems",
-        "User Management",
-        "System Security",
-        "Server Configuration",
-      ],
-      "Windows Server Administration": [
-        "Windows Server Basics",
-        "Active Directory",
-        "Group Policy",
-        "DNS & DHCP",
-        "Security Management",
-        "Backup & Recovery",
-      ],
-      "AWS Cloud Computing": [
-        "AWS Fundamentals",
-        "EC2 & Storage",
-        "Networking",
-        "Database Services",
-        "Security & IAM",
-        "Monitoring & Automation",
-      ],
-      "Tally for Beginners": [
-        "Tally Basics",
-        "Voucher Entry",
-        "Inventory Management",
-        "GST Implementation",
-        "Financial Reports",
-        "Data Management",
-      ],
-      "Power BI: Basics to Advanced": [
-        "Power BI Basics",
-        "Data Import",
-        "Data Modeling",
-        "Visualizations",
-        "DAX Functions",
-        "Dashboard Creation",
-      ],
-    };
-    return (
-      syllabusMap[courseName] || [
-        "Module 1",
-        "Module 2",
-        "Module 3",
-        "Module 4",
-        "Module 5",
-      ]
-    );
   };
+
+  useEffect(() => {
+    if (courseId) {
+      fetchCourseDetails();
+    }
+  }, [courseId]);
 
   const handleAddReview = (newReview) => {
     const review = {
@@ -161,8 +74,8 @@ export default function CourseDetailPage() {
   };
 
   const handleEnroll = () => {
-    // Open enrollment modal or redirect to enrollment page
-    console.log("Enroll in course:", course.id);
+    console.log("Enroll in course:", course?.id);
+    // Implement enrollment logic later
   };
 
   if (loading) {
@@ -198,32 +111,28 @@ export default function CourseDetailPage() {
   }
 
   return (
-    <div className="min-h-screen">
-      <Header />
-      <main>
-        <CourseDetailHero course={course} />
+    <>
+      <CourseDetailHero course={course} />
 
-        <section className="py-16">
-          <div className="container mx-auto px-4">
-            <div className="grid lg:grid-cols-3 gap-12">
-              {/* Main Content */}
-              <div className="lg:col-span-2">
-                <CourseDetailTabs
-                  course={course}
-                  reviews={reviews}
-                  onAddReview={handleAddReview}
-                />
-              </div>
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-3 gap-12">
+            {/* Main Content */}
+            <div className="lg:col-span-2">
+              <CourseDetailTabs
+                course={course}
+                reviews={reviews}
+                onAddReview={handleAddReview}
+              />
+            </div>
 
-              {/* Sidebar */}
-              <div className="lg:col-span-1">
-                <CourseDetailSidebar course={course} onEnroll={handleEnroll} />
-              </div>
+            {/* Sidebar */}
+            <div className="lg:col-span-1">
+              <CourseDetailSidebar course={course} onEnroll={handleEnroll} />
             </div>
           </div>
-        </section>
-      </main>
-      <Footer />
-    </div>
+        </div>
+      </section>
+    </>
   );
 }

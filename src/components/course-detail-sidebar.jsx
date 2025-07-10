@@ -58,13 +58,7 @@ export default function CourseDetailSidebar({ course, onEnroll }) {
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <span className="text-gray-600">Students</span>
-              <div className="flex items-center">
-                <Users className="h-4 w-4 text-orange-500 mr-1" />
-                <span className="font-medium">45+ enrolled</span>
-              </div>
-            </div>
+           
 
             <div className="flex items-center justify-between">
               <span className="text-gray-600">Certificate</span>
@@ -74,21 +68,10 @@ export default function CourseDetailSidebar({ course, onEnroll }) {
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <span className="text-gray-600">Next Batch</span>
-              <div className="flex items-center">
-                <Calendar className="h-4 w-4 text-red-500 mr-1" />
-                <span className="font-medium">15 Sept, 2024</span>
-              </div>
-            </div>
+         
           </div>
 
-          <div className="border-t pt-4">
-            <Badge className="w-full justify-center py-2 bg-green-100 text-green-800 hover:bg-green-200">
-              ✓ Placement Assistance Included
-            </Badge>
-          </div>
-
+         
           <div className="space-y-3">
             <Button onClick={handleEnroll} className="w-full bg-blue-600 hover:bg-blue-700 text-lg py-3">
               Enquire Now
@@ -116,35 +99,7 @@ export default function CourseDetailSidebar({ course, onEnroll }) {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Course Highlights</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-              <span className="text-sm text-gray-700">Industry-relevant curriculum</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span className="text-sm text-gray-700">Hands-on practical training</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-              <span className="text-sm text-gray-700">Expert instructor guidance</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-              <span className="text-sm text-gray-700">Flexible learning schedule</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-              <span className="text-sm text-gray-700">Career support included</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+    
       <EnrollmentModal
         isOpen={showEnrollmentModal}
         onClose={() => setShowEnrollmentModal(false)}
