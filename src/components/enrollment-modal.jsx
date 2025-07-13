@@ -16,6 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useCategoryStore } from "@/stores/categoryStore";
+import { useCourseStore } from "@/stores/courseStore";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -36,8 +38,9 @@ export default function EnrollmentModal({
   onClose,
   preSelectedCourse,
 }) {
-  const dummyCategories = [];
-  const dummyCourses = [];
+const { categories, fetchCategories } = useCategoryStore();
+const { courses, fetchCourses } = useCourseStore();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -53,6 +56,10 @@ export default function EnrollmentModal({
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+useEffect(() => {
+  if (categories.length === 0) fetchCategories();
+  if (courses.length === 0) fetchCourses({});
+}, []);
 
   // Initialize form with pre-selected course
   useEffect(() => {
@@ -69,9 +76,10 @@ export default function EnrollmentModal({
   // Filter courses when category changes
   useEffect(() => {
     if (formData.categoryId) {
-      const filtered = dummyCourses.filter(
-        (course) => course.category.id === formData.categoryId
-      );
+   const filtered = courses.filter(
+     (course) => course.category.id === formData.categoryId
+   );
+
       setAvailableCourses(filtered);
 
       // Reset course selection if category changes and no pre-selected course
@@ -87,7 +95,7 @@ export default function EnrollmentModal({
   // Update selected course when course ID changes
   useEffect(() => {
     if (formData.courseId && !preSelectedCourse) {
-      const course = dummyCourses.find((c) => c.id === formData.courseId);
+const course = courses.find((c) => c.id === formData.courseId);
       setSelectedCourse(course || null);
     }
   }, [formData.courseId, preSelectedCourse]);
@@ -108,9 +116,8 @@ export default function EnrollmentModal({
         body: JSON.stringify({
           ...formData,
           courseName: selectedCourse?.name,
-          categoryName: dummyCategories.find(
-            (c) => c.id === formData.categoryId
-          )?.name,
+          categoryName: categories.find((c) => c.id === formData.categoryId)
+            ?.name,
         }),
       });
 
@@ -158,13 +165,10 @@ export default function EnrollmentModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={resetAndClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="min-w-[70%] max-h-[90vh] max-w-[90%] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-gray-900 flex items-center justify-between">
             Course Enrollment Inquiry
-            <Button variant="ghost" size="sm" onClick={resetAndClose}>
-              <X className="h-4 w-4" />
-            </Button>
           </DialogTitle>
         </DialogHeader>
 
@@ -260,7 +264,7 @@ export default function EnrollmentModal({
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
                       <SelectContent>
-                        {dummyCategories.map((category) => (
+                        {categories.map((category) => (
                           <SelectItem key={category.id} value={category.id}>
                             {category.name}
                           </SelectItem>

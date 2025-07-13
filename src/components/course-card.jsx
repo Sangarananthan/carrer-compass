@@ -8,7 +8,7 @@ export default function CourseCard({
   course,
   onPreview,
   onEnroll,
-  isEditable = true,
+  isEditable = false,
   onEdit,
   onDelete,
 }) {
@@ -101,7 +101,7 @@ export default function CourseCard({
             Preview Course
           </Button>
           <Button
-            onClick={onEnroll(course)}
+            onClick={() => onEnroll(course)}
             className="flex-1 bg-blue-600 hover:bg-blue-700"
           >
             Enroll Now

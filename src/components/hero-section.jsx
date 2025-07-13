@@ -1,59 +1,45 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Star, Clock, Users } from "lucide-react"
+"use client";
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { useCourseStore } from "@/stores/courseStore";
 
 export default function HeroSection() {
-  const [currentSlide, setCurrentSlide] = useState(0)
-  const [courses, setCourses] = useState([])
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const { courses, fetchCourses } = useCourseStore();
 
   useEffect(() => {
-    setCourses([
-      {
-        id: "1",
-        name: "CCNA Certification",
-        image_url: "/placeholder.svg?height=200&width=300",
-        duration_months: 6,
-        category: "IT Infrastructure",
-      },
-      {
-        id: "2",
-        name: "Python for Beginners",
-        image_url: "/placeholder.svg?height=200&width=300",
-        duration_months: 4,
-        category: "Programming",
-      },
-      {
-        id: "3",
-        name: "Tally for Beginners",
-        image_url: "/placeholder.svg?height=200&width=300",
-        duration_months: 3,
-        category: "Accounting",
-      },
-    ])
-  }, [])
+    fetchCourses({ isRandom: true });
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % courses.length)
-    }, 2000)
-    return () => clearInterval(timer)
-  }, [courses.length])
+      setCurrentSlide((prev) => (prev + 1) % courses.length);
+    }, 2000);
+    return () => clearInterval(timer);
+  }, [courses.length]);
 
+  const handlePreviewCourse = (courseId) => {
+    window.location.href = `/courses/${courseId}`;
+  };
   return (
     <section className="relative min-h-[600px] bg-gradient-to-br from-blue-50 to-indigo-100 overflow-hidden">
       <div className="container mx-auto px-4 py-6 lg:py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">
             <div className="space-y-4">
-              <p className="text-blue-600 font-medium text-lg">Get trained by Industry Experts</p>
+              <p className="text-blue-600 font-medium text-lg">
+                Get trained by Industry Experts
+              </p>
               <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                Classroom or live online <span className="text-blue-600">instruction with an instructor</span>
+                Classroom or live online{" "}
+                <span className="text-blue-600">
+                  instruction with an instructor
+                </span>
               </h1>
-              <p className="text-xl text-gray-600 max-w-lg">with Complete Placement Assistance</p>
+              <p className="text-xl text-gray-600 max-w-lg">
+                with Complete Placement Assistance
+              </p>
             </div>
 
             <Button
@@ -75,43 +61,38 @@ export default function HeroSection() {
                 className="w-full h-auto rounded-2xl"
                 priority
               />
-              {courses.length < 0 && (
-                <div className="absolute -bottom-6 -right-6 lg:-right-12">
-                  <Card className="w-80 shadow-xl bg-white">
-                    <CardContent className="p-6">
-                      <div className="flex items-center space-x-4">
+              {courses.length > 0 && (
+                <div
+                  onClick={() =>
+                    handlePreviewCourse(courses[currentSlide].id)
+                  }
+                  className="absolute -bottom-6 md:-bottom-20 right-2 lg:right-10 w-[320px] h-[115px]"
+                >
+                  <div className="w-full h-full shadow-xl bg-white rounded-lg p-4">
+                    <div className="flex items-start space-x-4 h-full">
+                      <div className="relative w-20 h-20 flex-shrink-0">
                         <Image
-                          src={courses[currentSlide].image_url || "/placeholder.svg"}
+                          src={
+                            `${process.env.NEXT_PUBLIC_SUPABASE_URL}/${process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET}/${courses[currentSlide].image_url}` ||
+                            "/placeholder.svg?height=120&width=120"
+                          }
                           alt={courses[currentSlide].name}
-                          width={80}
-                          height={80}
+                          fill
                           className="rounded-lg object-cover"
                         />
-                        <div className="flex-1">
-                          <p className="text-sm text-blue-600 font-medium">{courses[currentSlide].category}</p>
-                          <h3 className="font-bold text-gray-900 mb-2">{courses[currentSlide].name}</h3>
-                          <div className="flex items-center space-x-4 text-sm text-gray-600">
-                            <div className="flex items-center">
-                              <Clock className="h-4 w-4 mr-1" />
-                              {courses[currentSlide].duration_months} months
-                            </div>
-                            <div className="flex items-center">
-                              <Users className="h-4 w-4 mr-1" />
-                              45 Students
-                            </div>
-                          </div>
-                          <div className="flex items-center mt-2">
-                            <div className="flex text-blue-400">
-                              {[...Array(5)].map((_, i) => (
-                                <Star key={i} className="h-4 w-4 fill-current" />
-                              ))}
-                            </div>
-                            <span className="text-sm text-gray-600 ml-2">5.0 /5</span>
-                          </div>
-                        </div>
                       </div>
-                    </CardContent>
-                  </Card>
+
+                      <div className="flex-1 min-w-0 h-full flex flex-col">
+                        <p className="text-xs text-blue-600 font-medium mb-1">
+                          {courses[currentSlide].category["name"]}{" "}
+                        </p>
+
+                        <h3 className="font-bold text-gray-900 text-sm mb-2 line-clamp-2 min-h-[2.5rem]">
+                          {courses[currentSlide].name}
+                        </h3>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -119,5 +100,5 @@ export default function HeroSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }
