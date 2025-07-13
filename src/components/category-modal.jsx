@@ -12,14 +12,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { X, Loader2, Image, Upload, Trash2 } from "lucide-react";
+import { X, Loader2, Upload, Trash2 } from "lucide-react";
 import { supabase } from "../utils/supabase-client";
-
+import Image from "next/image";
 export default function CategoryModal({
   isOpen,
   onClose,
   category,
-    mode,
+  mode,
   session,
 }) {
   const [formData, setFormData] = useState({
@@ -93,40 +93,74 @@ export default function CategoryModal({
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setError("");
 
-    try {
-      if (!formData.name.trim()) {
-        throw new Error("Category name is required");
-      }
-      const submitData = { ...formData };
-
-      if (selectedFile) {
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from("career-course")
-          .upload(`Category/${selectedFile.name}_${Date.now()}`, selectedFile, {
-            cacheControl: "3600",
-            upsert: true,
-          });
-        if (uploadError) {
-          console.error("Error uploading file:", uploadError);
-        }
-        submitData.image_url = uploadData.path;
-      }
-      const { error } = await supabase.from("Categories").insert({...submitData , email : session?.user?.email}).select();
-      if (error) {
-        console.error("Error saving category :", error);
-      }
-      onClose();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save category");
-    } finally {
-      setLoading(false);
+  try {
+    if (!formData.name.trim()) {
+      throw new Error("Category name is required");
     }
-  };
+
+    const submitData = { ...formData };
+
+    // Handle image upload if a new file is selected
+    if (selectedFile) {
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("career-course")
+        .upload(`Category/${selectedFile.name}_${Date.now()}`, selectedFile, {
+          cacheControl: "3600",
+          upsert: true,
+        });
+
+      if (uploadError) {
+        console.error("Error uploading file:", uploadError);
+        throw new Error("Failed to upload image");
+      }
+
+      submitData.image_url = uploadData.path;
+    }
+
+    let result;
+
+    if (mode === "create") {
+      // Create new category
+      result = await supabase
+        .from("Categories")
+        .insert({ ...submitData, email: session?.user?.email })
+        .select();
+    } else if (mode === "edit" && category?.id) {
+      // Update existing category
+      result = await supabase
+        .from("Categories")
+        .update(submitData)
+        .eq("id", category.id)
+        .select();
+    } else {
+      throw new Error("Invalid operation mode");
+    }
+
+    if (result.error) {
+      console.error("Error saving category:", result.error);
+
+      // Handle specific error cases
+      if (result.error.code === "23505") {
+        throw new Error(
+          "A category with this name already exists. Please choose a different name."
+        );
+      }
+
+      throw new Error(result.error.message || "Failed to save category");
+    }
+
+    onClose();
+  } catch (err) {
+    setError(err instanceof Error ? err.message : "Failed to save category");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const resetAndClose = () => {
     onClose();
@@ -139,7 +173,6 @@ export default function CategoryModal({
     });
     setImagePreview("");
     setSelectedFile(null);
-    setUploadMethod("file");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -231,16 +264,20 @@ export default function CategoryModal({
                 <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
                   <div className="flex items-center space-x-3">
                     <div className="flex-shrink-0">
-                      <div className="w-16 h-16 bg-white rounded-lg border border-gray-200 flex items-center justify-center overflow-hidden">
+                      <div className="w-16 h-16 bg-white rounded-lg border relative border-gray-200 flex items-center justify-center overflow-hidden">
                         {imagePreview ? (
-                          <img
-                            src={imagePreview}
+                          <Image
+                            src={
+                              `${process.env.NEXT_PUBLIC_SUPABASE_URL}/${process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET}/${imagePreview}` ||
+                              "/placeholder.svg?height=120&width=120"
+                            }
                             alt="Category preview"
-                            className="w-full h-full object-cover"
+                            fill
+                            className=" object-cover"
                             onError={() => setImagePreview("")}
                           />
                         ) : (
-                          <Image className="h-6 w-6 text-gray-400" />
+                          <div className="h-6 w-6 text-gray-400" />
                         )}
                       </div>
                     </div>

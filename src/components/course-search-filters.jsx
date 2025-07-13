@@ -1,11 +1,10 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Search, Filter, X } from "lucide-react"
-
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Search, Filter, X, Edit } from "lucide-react";
 
 export default function CourseSearchFilters({
   categories,
@@ -13,8 +12,10 @@ export default function CourseSearchFilters({
   onCategoryFilter,
   selectedCategory,
   searchTerm,
+  authenticated = false,
+  onEditCategory,
 }) {
-  const [showFilters, setShowFilters] = useState(false)
+  const [showFilters, setShowFilters] = useState(false);
 
   return (
     <div className="bg-white border-b border-gray-200 sticky top-16 z-40">
@@ -40,7 +41,9 @@ export default function CourseSearchFilters({
             Filters
           </Button>
 
-          <div className={`flex flex-wrap gap-2 ${showFilters ? "block" : "hidden lg:flex"} w-full lg:w-auto`}>
+          <div
+            className={`flex flex-wrap gap-2 ${showFilters ? "block" : "hidden lg:flex"} w-full lg:w-auto`}
+          >
             <Button
               variant={selectedCategory === null ? "default" : "outline"}
               size="sm"
@@ -50,15 +53,31 @@ export default function CourseSearchFilters({
               All Courses
             </Button>
             {categories.map((category) => (
-              <Button
-                key={category.id}
-                variant={selectedCategory === category.id ? "default" : "outline"}
-                size="sm"
-                onClick={() => onCategoryFilter(category.id)}
-                className="text-sm"
-              >
-                {category.name}
-              </Button>
+              <div key={category.id} className="relative group">
+                <Button
+                  variant={
+                    selectedCategory === category.id ? "default" : "outline"
+                  }
+                  size="sm"
+                  onClick={() => onCategoryFilter(category.id)}
+                  className="text-sm pr-8"
+                >
+                  {category.name}
+                </Button>
+                {authenticated && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEditCategory(category);
+                    }}
+                    className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-100 rounded-full"
+                  >
+                    <Edit className="h-3 w-3 text-gray-600" />
+                  </Button>
+                )}
+              </div>
             ))}
           </div>
         </div>
@@ -75,5 +94,5 @@ export default function CourseSearchFilters({
         )}
       </div>
     </div>
-  )
+  );
 }

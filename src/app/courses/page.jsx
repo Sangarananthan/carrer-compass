@@ -18,7 +18,7 @@ export default function CoursesPage() {
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
   const [courseModalOpen, setCourseModalOpen] = useState(false);
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState(null);
-  const [selectedCategoryModal, setSelectedCategoryModal] = useState(null); 
+  const [selectedCategoryModal, setSelectedCategoryModal] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [modalMode, setModalMode] = useState("");
   const [session, setSession] = useState(null);
@@ -112,7 +112,7 @@ export default function CoursesPage() {
   };
 
   const openCourseModal = (course) => {
-    console.log("Opening course modal with:", course); 
+    console.log("Opening course modal with:", course);
     setSelectedCourse(course || null);
     setModalMode(course ? "edit" : "create");
     setCourseModalOpen(true);
@@ -130,38 +130,46 @@ export default function CoursesPage() {
     fetchCategories();
   };
 
+  // Handler for editing individual categories
+  const handleEditCategory = (category) => {
+    setSelectedCategoryModal(category);
+    setModalMode("edit");
+    setCategoryModalOpen(true);
+  };
+
   return (
     <>
       <CoursesHero />
 
-        <CourseSearchFilters
-          categories={categories}
-          onSearchChange={setSearchTerm}
-          onCategoryFilter={setSelectedCategoryFilter}
-          selectedCategory={selectedCategoryFilter}
-          searchTerm={searchTerm}
-        />
+      <CourseSearchFilters
+        categories={categories}
+        onSearchChange={setSearchTerm}
+        onCategoryFilter={setSelectedCategoryFilter}
+        selectedCategory={selectedCategoryFilter}
+        searchTerm={searchTerm}
+        authenticated={session?.user?.role === "authenticated"}
+        onEditCategory={handleEditCategory}
+      />
 
-        {session?.user?.role === "authenticated" && (
-          <div className="flex w-fit gap-[1rem] items-center mb-8 p-4 ml-auto">
-            <Button
-              onClick={() => openCategoryModal()}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              <Plus className="h-4 w-4" />
-              Add Category
-            </Button>
-            <Button
-              onClick={() => openCourseModal()}
-              className="bg-blue-600 hover:bg-blue-700"
-              disabled={categories.length === 0}
-            >
-              <Plus className="h-4 w-4" />
-              Add Course
-            </Button>
-          </div>
-        )}
-
+      {session?.user?.role === "authenticated" && (
+        <div className="flex w-fit gap-[1rem] items-center mb-8 p-4 ml-auto">
+          <Button
+            onClick={() => openCategoryModal()}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            <Plus className="h-4 w-4" />
+            Add Category
+          </Button>
+          <Button
+            onClick={() => openCourseModal()}
+            className="bg-blue-600 hover:bg-blue-700"
+            disabled={categories.length === 0}
+          >
+            <Plus className="h-4 w-4" />
+            Add Course
+          </Button>
+        </div>
+      )}
 
       <section className="py-[1rem]">
         <div className="container mx-auto px-4">

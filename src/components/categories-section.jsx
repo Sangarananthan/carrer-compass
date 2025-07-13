@@ -15,7 +15,6 @@ export default function CategoriesSection() {
       .from("Categories")
       .select("*")
       .eq("show_on_home", true)
-      .limit(3);
 
     if (data && !error) {
       setCategories(data);
