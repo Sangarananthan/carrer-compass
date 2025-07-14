@@ -23,24 +23,69 @@ export default function CoursesPage() {
   const [modalMode, setModalMode] = useState("");
   const [enrollModalOpen, setEnrollModalOpen] = useState(false);
   const [activeEnrollCourse, setActiveEnrollCourse] = useState(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+  
   const { categories, fetchCategories } = useCategoryStore();
   const { courses, fetchCourses, removeCourse } = useCourseStore();
   const { isAuthenticated, session, setSession } = useAuthStore();
 
-
+  // Initialize session and categories
   useEffect(() => {
-    setSession();
-    fetchCategories();
-    const urlParams = new URLSearchParams(window.location.search);
-    const categoryParam = urlParams.get("category");
-    if (categoryParam) {
-      setSelectedCategoryFilter(categoryParam);
+    const initializeData = async () => {
+      try {
+        await setSession();
+        await fetchCategories();
+        setIsInitialized(true);
+      } catch (error) {
+        console.error("Error initializing data:", error);
+        setIsInitialized(true); // Set to true even on error to prevent infinite loading
+      }
+    };
+    
+    initializeData();
+  }, [setSession, fetchCategories]);
+
+  // Handle URL parameters after categories are loaded
+  useEffect(() => {
+    if (isInitialized && categories.length > 0) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const categoryParam = urlParams.get("category");
+      
+      if (categoryParam) {
+        // Ensure the category exists in the categories array
+        const categoryExists = categories.find(cat => cat.id === categoryParam || cat.id === parseInt(categoryParam));
+        if (categoryExists) {
+          setSelectedCategoryFilter(categoryParam);
+        } else {
+          console.warn(`Category with id ${categoryParam} not found`);
+          // Optionally clear the invalid category parameter from URL
+          const newUrl = new URL(window.location);
+          newUrl.searchParams.delete("category");
+          window.history.replaceState({}, "", newUrl);
+        }
+      }
     }
-  }, []);
+  }, [isInitialized, categories]);
 
+  // Fetch courses when search term or category filter changes
   useEffect(() => {
-    fetchCourses({ searchTerm, categoryFilter: selectedCategoryFilter });
-  }, [searchTerm, selectedCategoryFilter, fetchCourses]);
+    if (isInitialized) {
+      fetchCourses({ searchTerm, categoryFilter: selectedCategoryFilter });
+    }
+  }, [searchTerm, selectedCategoryFilter, fetchCourses, isInitialized]);
+
+  // Update URL when category filter changes (optional - for maintaining URL state)
+  useEffect(() => {
+    if (isInitialized) {
+      const url = new URL(window.location);
+      if (selectedCategoryFilter) {
+        url.searchParams.set("category", selectedCategoryFilter);
+      } else {
+        url.searchParams.delete("category");
+      }
+      window.history.replaceState({}, "", url);
+    }
+  }, [selectedCategoryFilter, isInitialized]);
 
   const handleDeleteCourse = async (courseId) => {
     if (window.confirm("Are you sure you want to delete this course?")) {
@@ -63,6 +108,14 @@ export default function CoursesPage() {
     }
   };
 
+  // Show loading state while initializing
+  if (!isInitialized) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-gray-600">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -113,7 +166,7 @@ export default function CoursesPage() {
             <div>
               <h2 className="text-2xl font-bold text-gray-900">
                 {selectedCategoryFilter
-                  ? `${categories.find((c) => c.id === selectedCategoryFilter)?.name} Courses`
+                  ? `${categories.find((c) => c.id === selectedCategoryFilter || c.id === parseInt(selectedCategoryFilter))?.name || 'Unknown Category'} Courses`
                   : "All Courses"}
               </h2>
               <p className="text-gray-600 mt-1">

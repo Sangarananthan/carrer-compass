@@ -7,7 +7,7 @@ import { useCourseStore } from "@/stores/courseStore";
 export default function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const { courses, fetchCourses } = useCourseStore();
-
+  
   useEffect(() => {
     fetchCourses({ isRandom: true });
   }, []);
@@ -63,9 +63,7 @@ export default function HeroSection() {
               />
               {courses.length > 0 && (
                 <div
-                  onClick={() =>
-                    handlePreviewCourse(courses[currentSlide].id)
-                  }
+                  onClick={() => handlePreviewCourse(courses[currentSlide]?.id)}
                   className="absolute -bottom-6 md:-bottom-20 right-2 lg:right-10 w-[320px] h-[115px]"
                 >
                   <div className="w-full h-full shadow-xl bg-white rounded-lg p-4">
@@ -73,10 +71,10 @@ export default function HeroSection() {
                       <div className="relative w-20 h-20 flex-shrink-0">
                         <Image
                           src={
-                            `${process.env.NEXT_PUBLIC_SUPABASE_URL}/${process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET}/${courses[currentSlide].image_url}` ||
+                            `${process.env.NEXT_PUBLIC_SUPABASE_URL}/${process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET}/${courses[currentSlide]?.image_url}` ||
                             "/placeholder.svg?height=120&width=120"
                           }
-                          alt={courses[currentSlide].name}
+                          alt={courses[currentSlide]?.name}
                           fill
                           className="rounded-lg object-cover"
                         />
@@ -84,11 +82,11 @@ export default function HeroSection() {
 
                       <div className="flex-1 min-w-0 h-full flex flex-col">
                         <p className="text-xs text-blue-600 font-medium mb-1">
-                          {courses[currentSlide].category["name"]}{" "}
+                          {courses[currentSlide]?.category["name"]}{" "}
                         </p>
 
                         <h3 className="font-bold text-gray-900 text-sm mb-2 line-clamp-2 min-h-[2.5rem]">
-                          {courses[currentSlide].name}
+                          {courses[currentSlide]?.name}
                         </h3>
                       </div>
                     </div>

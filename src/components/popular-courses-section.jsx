@@ -32,7 +32,7 @@ export default function PopularCoursesSection() {
           {courses.map((course) => (
             <Card
               key={course.id}
-              className="overflow-hidden hover:shadow-lg transition-shadow p-0"
+              className="flex flex-col h-full gap-0 p-0 overflow-hidden hover:shadow-lg transition-shadow"
             >
               <div className="relative h-48">
                 <Image
@@ -51,7 +51,7 @@ export default function PopularCoursesSection() {
                 </div>
               </div>
 
-              <CardContent className="p-6">
+              <CardContent className="flex flex-col flex-grow p-[1rem]">
                 <h3 className="text-xl font-bold text-gray-900 mb-3">
                   {course.name}
                 </h3>
@@ -64,22 +64,12 @@ export default function PopularCoursesSection() {
                   <div className="flex items-center">
                     <Clock className="h-4 w-4 mr-1" />6 months
                   </div>
-                  <div className="flex items-center">
-                    <div className="flex text-yellow-400">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="h-4 w-4 fill-current" />
-                      ))}
-                    </div>
-                    <span className="text-sm text-gray-600 ml-2">5.0 /5</span>
-                  </div>
                 </div>
 
-                <div className="flex items-center justify-between">
-                 
-
+                <div className="mt-auto">
                   <Button
                     onClick={() => handlePreviewCourse(course.id)}
-                    className="bg-blue-600 hover:bg-blue-700 w-full mx-auto"
+                    className="bg-blue-600 hover:bg-blue-700 w-full"
                   >
                     Preview this Course
                   </Button>

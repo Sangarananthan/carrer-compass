@@ -16,14 +16,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useCategoryStore } from "@/stores/categoryStore";
-import { useCourseStore } from "@/stores/courseStore";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
-  X,
   Clock,
   Globe,
   BookOpen,
@@ -32,14 +29,20 @@ import {
   Loader2,
 } from "lucide-react";
 import Image from "next/image";
+import { supabase } from "@/utils/supabase-client";
+import { useCourseStore } from "@/stores/courseStore";
 
 export default function EnrollmentModal({
   isOpen,
   onClose,
   preSelectedCourse,
 }) {
-const { categories, fetchCategories } = useCategoryStore();
-const { courses, fetchCourses } = useCourseStore();
+  console.log(preSelectedCourse, "Pre-selected course in modal");
+  const { courses, fetchCourses } = useCourseStore();
+
+  // Local state for categories and courses (separate from store)
+  const [categories, setCategories] = useState([]);
+  const [availableCourses, setAvailableCourses] = useState([]);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -49,59 +52,114 @@ const { courses, fetchCourses } = useCourseStore();
     courseId: "",
     message: "",
   });
-  const [selectedCourse, setSelectedCourse] = useState(
-    preSelectedCourse || null
-  );
-  const [availableCourses, setAvailableCourses] = useState([]);
+
+  const [selectedCourse, setSelectedCourse] = useState(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
-useEffect(() => {
-  if (categories.length === 0) fetchCategories();
-  if (courses.length === 0) fetchCourses({});
-}, []);
+  const [fetchingCourses, setFetchingCourses] = useState(false);
 
-  // Initialize form with pre-selected course
-  useEffect(() => {
-    if (preSelectedCourse) {
-      setSelectedCourse(preSelectedCourse);
-      setFormData((prev) => ({
-        ...prev,
-        categoryId: preSelectedCourse.category.id,
-        courseId: preSelectedCourse.id,
-      }));
+  // Fetch categories on component mount
+  const fetchCategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("Categories")
+        .select("*")
+        .order("name");
+
+      if (error) throw error;
+      setCategories(data || []);
+    } catch (err) {
+      console.error("Error fetching categories:", err);
     }
-  }, [preSelectedCourse]);
+  };
 
-  // Filter courses when category changes
-  useEffect(() => {
-    if (formData.categoryId) {
-   const filtered = courses.filter(
-     (course) => course.category.id === formData.categoryId
-   );
-
-      setAvailableCourses(filtered);
-
-      // Reset course selection if category changes and no pre-selected course
-      if (!preSelectedCourse) {
-        setFormData((prev) => ({ ...prev, courseId: "" }));
-        setSelectedCourse(null);
-      }
-    } else {
+  // Fetch courses by category
+  const fetchCoursesByCategory = async (categoryId) => {
+    if (!categoryId) {
       setAvailableCourses([]);
+      return;
+    }
+
+    setFetchingCourses(true);
+    try {
+      const { data, error } = await supabase
+        .from("Courses")
+        .select("*, category:Categories(*)")
+        .eq("category_id", categoryId)
+        .order("name");
+
+      if (error) throw error;
+      setAvailableCourses(data || []);
+    } catch (err) {
+      console.error("Error fetching courses:", err);
+      setAvailableCourses([]);
+    } finally {
+      setFetchingCourses(false);
+    }
+  };
+
+  // Initialize categories on mount
+  useEffect(() => {
+    if (isOpen) {
+      fetchCategories();
+      fetchCourses();
+      setAvailableCourses(courses);
+    }
+  }, [isOpen]);
+
+  // Handle preselected course initialization
+  useEffect(() => {
+    if (preSelectedCourse && categories.length > 0) {
+      // Find the category for the preselected course
+      const courseCategory = categories.find(
+        (cat) => cat.id === preSelectedCourse.category_id
+      );
+
+      if (courseCategory) {
+        // Normalize the preselected course data structure
+        const normalizedCourse = {
+          ...preSelectedCourse,
+          category: courseCategory,
+        };
+
+        setSelectedCourse(normalizedCourse);
+        setFormData((prev) => ({
+          ...prev,
+          categoryId: preSelectedCourse.category_id.toString(),
+          courseId: preSelectedCourse.id.toString(),
+        }));
+
+        // Set this single course as available
+        setAvailableCourses([normalizedCourse]);
+      }
+    }
+  }, [preSelectedCourse, categories]);
+
+  // Handle category change
+  useEffect(() => {
+    if (formData.categoryId && !preSelectedCourse) {
+      fetchCoursesByCategory(parseInt(formData.categoryId));
     }
   }, [formData.categoryId, preSelectedCourse]);
 
-  // Update selected course when course ID changes
+  // Handle course selection change
   useEffect(() => {
     if (formData.courseId && !preSelectedCourse) {
-const course = courses.find((c) => c.id === formData.courseId);
+      const courseIdNum = parseInt(formData.courseId);
+      const course = availableCourses.find((c) => c.id === courseIdNum);
       setSelectedCourse(course || null);
     }
-  }, [formData.courseId, preSelectedCourse]);
+  }, [formData.courseId, availableCourses, preSelectedCourse]);
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+
+    // Reset course selection when category changes (unless preselected)
+    if (field === "categoryId" && !preSelectedCourse) {
+      setFormData((prev) => ({ ...prev, courseId: "" }));
+      setSelectedCourse(null);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -109,37 +167,71 @@ const course = courses.find((c) => c.id === formData.courseId);
     setLoading(true);
     setError("");
 
+    // Validation
+    if (!formData.name.trim()) {
+      setError("Please enter your full name");
+      setLoading(false);
+      return;
+    }
+
+    if (!formData.email.trim()) {
+      setError("Please enter your email address");
+      setLoading(false);
+      return;
+    }
+
+    if (!formData.mobile.trim()) {
+      setError("Please enter your mobile number");
+      setLoading(false);
+      return;
+    }
+
+    if (!formData.categoryId) {
+      setError("Please select a category");
+      setLoading(false);
+      return;
+    }
+
+    if (!formData.courseId || !selectedCourse) {
+      setError("Please select a course");
+      setLoading(false);
+      return;
+    }
+
     try {
+      const emailData = {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        mobile: formData.mobile.trim(),
+        categoryName: selectedCourse.category.name,
+        courseName: selectedCourse.name,
+        courseDetails: {
+          duration: selectedCourse.duration_months,
+          mode: selectedCourse.mode,
+          language: selectedCourse.language,
+          overview: selectedCourse.overview,
+        },
+        message: formData.message.trim(),
+        submittedAt: new Date().toLocaleString(),
+      };
+
       const response = await fetch("/api/enrollment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          courseName: selectedCourse?.name,
-          categoryName: categories.find((c) => c.id === formData.categoryId)
-            ?.name,
-        }),
+        body: JSON.stringify(emailData),
       });
 
       if (response.ok) {
         setSuccess(true);
         setTimeout(() => {
-          onClose();
-          setSuccess(false);
-          setFormData({
-            name: "",
-            email: "",
-            mobile: "",
-            categoryId: preSelectedCourse?.category.id || "",
-            courseId: preSelectedCourse?.id || "",
-            message: "",
-          });
+          resetAndClose();
         }, 2000);
       } else {
         const data = await response.json();
         setError(data.error || "Failed to submit enrollment");
       }
     } catch (err) {
+      console.error("Submission error:", err);
       setError("Network error. Please try again.");
     } finally {
       setLoading(false);
@@ -148,17 +240,20 @@ const course = courses.find((c) => c.id === formData.courseId);
 
   const resetAndClose = () => {
     onClose();
+    setFormData({
+      name: "",
+      email: "",
+      mobile: "",
+      categoryId: preSelectedCourse?.category_id.toString() || "",
+      courseId: preSelectedCourse?.id.toString() || "",
+      message: "",
+    });
+
     if (!preSelectedCourse) {
-      setFormData({
-        name: "",
-        email: "",
-        mobile: "",
-        categoryId: "",
-        courseId: "",
-        message: "",
-      });
       setSelectedCourse(null);
+      setAvailableCourses([]);
     }
+
     setError("");
     setSuccess(false);
   };
@@ -184,150 +279,6 @@ const course = courses.find((c) => c.id === formData.courseId);
           </div>
         ) : (
           <div className="grid lg:grid-cols-2 gap-8">
-            {/* Left Side - Form */}
-            <div className="space-y-6">
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {error && (
-                  <Alert variant="destructive">
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                )}
-
-                {/* Personal Information */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Personal Information
-                  </h3>
-
-                  <div>
-                    <Label htmlFor="name">Full Name *</Label>
-                    <Input
-                      id="name"
-                      type="text"
-                      value={formData.name}
-                      onChange={(e) =>
-                        handleInputChange("name", e.target.value)
-                      }
-                      placeholder="Enter your full name"
-                      required
-                      className="mt-1"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="email">Email Address *</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) =>
-                        handleInputChange("email", e.target.value)
-                      }
-                      placeholder="Enter your email address"
-                      required
-                      className="mt-1"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="mobile">Mobile Number *</Label>
-                    <Input
-                      id="mobile"
-                      type="tel"
-                      value={formData.mobile}
-                      onChange={(e) =>
-                        handleInputChange("mobile", e.target.value)
-                      }
-                      placeholder="Enter your mobile number"
-                      required
-                      className="mt-1"
-                    />
-                  </div>
-                </div>
-
-                {/* Course Selection */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Course Selection
-                  </h3>
-
-                  <div>
-                    <Label htmlFor="category">Category *</Label>
-                    <Select
-                      value={formData.categoryId}
-                      onValueChange={(value) =>
-                        handleInputChange("categoryId", value)
-                      }
-                      disabled={!!preSelectedCourse}
-                    >
-                      <SelectTrigger className="mt-1">
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((category) => (
-                          <SelectItem key={category.id} value={category.id}>
-                            {category.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="course">Course *</Label>
-                    <Select
-                      value={formData.courseId}
-                      onValueChange={(value) =>
-                        handleInputChange("courseId", value)
-                      }
-                      disabled={!!preSelectedCourse || !formData.categoryId}
-                    >
-                      <SelectTrigger className="mt-1">
-                        <SelectValue placeholder="Select a course" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {availableCourses.map((course) => (
-                          <SelectItem key={course.id} value={course.id}>
-                            {course.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                {/* Additional Message */}
-                <div>
-                  <Label htmlFor="message">Additional Message (Optional)</Label>
-                  <Textarea
-                    id="message"
-                    value={formData.message}
-                    onChange={(e) =>
-                      handleInputChange("message", e.target.value)
-                    }
-                    placeholder="Any specific questions or requirements..."
-                    rows={3}
-                    className="mt-1"
-                  />
-                </div>
-
-                <Button
-                  type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-lg py-3"
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Submitting...
-                    </>
-                  ) : (
-                    "Submit Enrollment Inquiry"
-                  )}
-                </Button>
-              </form>
-            </div>
-
             {/* Right Side - Course Preview */}
             <div className="space-y-6">
               <h3 className="text-lg font-semibold text-gray-900">
@@ -335,12 +286,13 @@ const course = courses.find((c) => c.id === formData.courseId);
               </h3>
 
               {selectedCourse ? (
-                <Card className="overflow-hidden border-2 border-blue-100">
+                <Card className="p-0 overflow-hidden border-2 gap-0 border-blue-100">
                   <div className="relative h-48">
                     <Image
                       src={
-                        selectedCourse.image_url ||
-                        "/placeholder.svg?height=200&width=400"
+                        selectedCourse.image_url
+                          ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/${process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET}/${selectedCourse.image_url}`
+                          : "/placeholder.svg?height=200&width=400"
                       }
                       alt={selectedCourse.name}
                       fill
@@ -402,17 +354,13 @@ const course = courses.find((c) => c.id === formData.courseId);
                       </div>
                     </div>
 
-                    <div className="bg-blue-50 p-4 rounded-lg">
-                      <h5 className="font-semibold text-blue-900 mb-2">
-                        What's Included:
+                    <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                      <h5 className="font-semibold text-gray-900 mb-2">
+                        Course Overview:
                       </h5>
-                      <ul className="text-sm text-blue-800 space-y-1">
-                        <li>✓ Complete course materials</li>
-                        <li>✓ Hands-on practical training</li>
-                        <li>✓ Industry expert guidance</li>
-                        <li>✓ Certificate upon completion</li>
-                        <li>✓ Placement assistance</li>
-                      </ul>
+                      <p className="text-sm text-gray-700 line-clamp-4">
+                        {selectedCourse.overview}
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
@@ -430,32 +378,164 @@ const course = courses.find((c) => c.id === formData.courseId);
                 </Card>
               )}
 
-              {/* Contact Information */}
-              <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
-                <CardContent className="p-6">
-                  <h4 className="font-semibold text-gray-900 mb-3">
-                    Need Help?
-                  </h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center text-gray-600">
-                      <span className="font-medium">📞 Phone:</span>
-                      <span className="ml-2">
-                        +91 {process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}
-                      </span>
-                    </div>
-                    <div className="flex items-center text-gray-600">
-                      <span className="font-medium">✉️ Email:</span>
-                      <span className="ml-2">
-                        {process.env.NEXT_PUBLIC_EMAIL}
-                      </span>
-                    </div>
-                    <div className="flex items-center text-gray-600">
-                      <span className="font-medium">⏰ Response:</span>
-                      <span className="ml-2">Within 24 hours</span>
-                    </div>
+            </div>
+            <div className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Personal Information
+                  </h3>
+
+                  <div>
+                    <Label htmlFor="name">Full Name *</Label>
+                    <Input
+                      id="name"
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) =>
+                        handleInputChange("name", e.target.value)
+                      }
+                      placeholder="Enter your full name"
+                      required
+                      className="mt-1"
+                    />
                   </div>
-                </CardContent>
-              </Card>
+
+                  <div>
+                    <Label htmlFor="email">Email Address *</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) =>
+                        handleInputChange("email", e.target.value)
+                      }
+                      placeholder="Enter your email address"
+                      required
+                      className="mt-1"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="mobile">Mobile Number *</Label>
+                    <Input
+                      id="mobile"
+                      type="tel"
+                      value={formData.mobile}
+                      onChange={(e) =>
+                        handleInputChange("mobile", e.target.value)
+                      }
+                      placeholder="Enter your mobile number"
+                      required
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Course Selection
+                  </h3>
+
+                  <div>
+                    <Label htmlFor="category">Category *</Label>
+                    <Select
+                      value={formData.categoryId}
+                      onValueChange={(value) =>
+                        handleInputChange("categoryId", value)
+                      }
+                      disabled={!!preSelectedCourse}
+                    >
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem
+                            key={category.id}
+                            value={category.id.toString()}
+                          >
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="course">Course *</Label>
+                    <Select
+                      value={formData.courseId}
+                      onValueChange={(value) =>
+                        handleInputChange("courseId", value)
+                      }
+                      disabled={!!preSelectedCourse || !formData.categoryId}
+                    >
+                      <SelectTrigger className="mt-1">
+                        <SelectValue
+                          placeholder={
+                            fetchingCourses
+                              ? "Loading courses..."
+                              : "Select a course"
+                          }
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {fetchingCourses ? (
+                          <div className="p-2 text-center text-gray-500">
+                            <Loader2 className="h-4 w-4 animate-spin inline mr-2" />
+                            Loading courses...
+                          </div>
+                        ) : (
+                          availableCourses.map((course) => (
+                            <SelectItem
+                              key={course.id}
+                              value={course.id.toString()}
+                            >
+                              {course.name}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="message">Additional Message (Optional)</Label>
+                  <Textarea
+                    id="message"
+                    value={formData.message}
+                    onChange={(e) =>
+                      handleInputChange("message", e.target.value)
+                    }
+                    placeholder="Any specific questions or requirements..."
+                    rows={3}
+                    className="mt-1"
+                  />
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-lg py-3"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Submitting...
+                    </>
+                  ) : (
+                    "Submit Enrollment Inquiry"
+                  )}
+                </Button>
+              </form>
             </div>
           </div>
         )}
