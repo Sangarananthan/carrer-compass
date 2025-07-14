@@ -16,61 +16,127 @@ export default function CourseDetailPage() {
   const [course, setCourse] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [session, setSession] = useState(null);
 
-  const fetchCourseDetails = async () => {
-    setLoading(true);
+  // Get session and set up auth listener
+  useEffect(() => {
+    const getSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      setSession(session);
+    };
+
+    getSession();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!courseId) return;
+
+    const fetchCourseDetails = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from("Courses")
+          .select("*, category:Categories(*)")
+          .eq("id", courseId)
+          .single();
+
+        if (error) {
+          console.error("Error fetching course:", error);
+        } else if (data) {
+          setCourse(data);
+        }
+      } catch (err) {
+        console.error("Error fetching course:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchReviews = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("CourseReview")
+          .select("*")
+          .eq("course_id", courseId)
+          .order("created_at", { ascending: false });
+
+        if (error) {
+          console.error("Error fetching reviews:", error);
+        } else {
+          setReviews(data || []);
+        }
+      } catch (err) {
+        console.error("Error fetching reviews:", err);
+      }
+    };
+
+    fetchCourseDetails();
+    fetchReviews();
+  }, [courseId]);
+
+  const handleAddReview = async (newReview) => {
     try {
       const { data, error } = await supabase
-        .from("Courses")
-        .select("*, category:Categories(*)")
-        .eq("id", courseId)
+        .from("CourseReview")
+        .insert([
+          {
+            course_id: parseInt(courseId),
+            name: newReview.name,
+            review: newReview.review,
+            rating: newReview.rating,
+          },
+        ])
+        .select()
         .single();
 
       if (error) {
-        console.error("Error fetching course:", error);
-      } else if (data) {
-        setCourse(data);
-
-        // Later replace with Supabase review fetching
-        setReviews([
-          {
-            id: "1",
-            name: "Priya Sharma",
-            review:
-              "Excellent course! The instructor was very knowledgeable and the content was well-structured.",
-            rating: 5,
-            created_at: "2024-01-15",
-          },
-          {
-            id: "2",
-            name: "Rajesh Kumar",
-            review:
-              "Great practical approach. I learned a lot and feel confident about implementing these skills.",
-            rating: 5,
-            created_at: "2024-01-10",
-          },
-        ]);
+        console.error("Error adding review:", error);
+        alert("Failed to add review. Please try again.");
+      } else {
+        setReviews([data, ...reviews]);
       }
     } catch (err) {
-      console.error("Error fetching course:", err);
-    } finally {
-      setLoading(false);
+      console.error("Error adding review:", err);
+      alert("Failed to add review. Please try again.");
     }
   };
 
-  useEffect(() => {
-    if (courseId) {
-      fetchCourseDetails();
+  const handleDeleteReview = async (reviewId) => {
+    if (!session) {
+      alert("You must be logged in to delete reviews.");
+      return;
     }
-  }, [courseId]);
 
-  const handleAddReview = (newReview) => {
-    const review = {
-      id: Date.now().toString(),
-      ...newReview,
-      created_at: new Date().toISOString().split("T")[0],
-    };
-    setReviews([review, ...reviews]);
+    if (!confirm("Are you sure you want to delete this review?")) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from("CourseReview")
+        .delete()
+        .eq("id", reviewId);
+
+      if (error) {
+        console.error("Error deleting review:", error);
+        alert("Failed to delete review. Please try again.");
+      } else {
+        setReviews(reviews.filter((review) => review.id !== reviewId));
+      }
+    } catch (err) {
+      console.error("Error deleting review:", err);
+      alert("Failed to delete review. Please try again.");
+    }
   };
 
   const handleEnroll = () => {
@@ -123,6 +189,8 @@ export default function CourseDetailPage() {
                 course={course}
                 reviews={reviews}
                 onAddReview={handleAddReview}
+                onDeleteReview={handleDeleteReview}
+                isAuthenticated={!!session}
               />
             </div>
 

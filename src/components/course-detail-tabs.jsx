@@ -1,29 +1,42 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { CheckCircle, Plus, Star, User } from "lucide-react"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle, Plus, Star, User, Trash2 } from "lucide-react";
 
-
-export default function CourseDetailTabs({ course, reviews, onAddReview }) {
-  const [activeTab, setActiveTab] = useState("info")
-  const [showReviewForm, setShowReviewForm] = useState(false)
-  const [reviewForm, setReviewForm] = useState({ name: "", review: "", rating: 5 })
+export default function CourseDetailTabs({
+  course,
+  reviews,
+  onAddReview,
+  onDeleteReview,
+  isAuthenticated,
+}) {
+  const [activeTab, setActiveTab] = useState("info");
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewForm, setReviewForm] = useState({
+    name: "",
+    review: "",
+    rating: 5,
+  });
 
   const tabs = [
     { id: "info", label: "Course Info" },
     { id: "curriculum", label: "Curriculum" },
     { id: "reviews", label: "Reviews" },
-  ]
+  ];
 
   const handleSubmitReview = (e) => {
-    e.preventDefault()
-    onAddReview(reviewForm)
-    setReviewForm({ name: "", review: "", rating: 5 })
-    setShowReviewForm(false)
-  }
+    e.preventDefault();
+    onAddReview(reviewForm);
+    setReviewForm({ name: "", review: "", rating: 5 });
+    setShowReviewForm(false);
+  };
+
+  const handleDeleteClick = (reviewId) => {
+    onDeleteReview(reviewId);
+  };
 
   return (
     <div className="space-y-8">
@@ -40,7 +53,9 @@ export default function CourseDetailTabs({ course, reviews, onAddReview }) {
               }`}
             >
               {tab.label}
-              {tab.id === "reviews" && <span className="ml-2 text-xs">({reviews.length})</span>}
+              {tab.id === "reviews" && (
+                <span className="ml-2 text-xs">({reviews.length})</span>
+              )}
             </button>
           ))}
         </nav>
@@ -50,14 +65,20 @@ export default function CourseDetailTabs({ course, reviews, onAddReview }) {
         {activeTab === "info" && (
           <div className="space-y-8">
             <div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">About This Course</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                About This Course
+              </h3>
               <div className="prose prose-lg max-w-none">
-                <p className="text-gray-700 leading-relaxed">{course.overview}</p>
+                <p className="text-gray-700 leading-relaxed">
+                  {course.overview}
+                </p>
               </div>
             </div>
 
             <div>
-              <h4 className="text-xl font-semibold text-gray-900 mb-4">What You'll Learn</h4>
+              <h4 className="text-xl font-semibold text-gray-900 mb-4">
+                What You'll Learn
+              </h4>
               <div className="grid md:grid-cols-2 gap-4">
                 {[
                   "Comprehensive understanding of core concepts",
@@ -74,17 +95,18 @@ export default function CourseDetailTabs({ course, reviews, onAddReview }) {
                 ))}
               </div>
             </div>
-
-           
           </div>
         )}
 
         {activeTab === "curriculum" && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Course Curriculum</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                Course Curriculum
+              </h3>
               <p className="text-gray-600 mb-6">
-                Comprehensive curriculum designed by industry experts to ensure practical learning.
+                Comprehensive curriculum designed by industry experts to ensure
+                practical learning.
               </p>
             </div>
 
@@ -95,13 +117,18 @@ export default function CourseDetailTabs({ course, reviews, onAddReview }) {
                     <div className="flex items-center space-x-4">
                       <div className="flex-shrink-0">
                         <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                          <span className="text-blue-600 font-semibold">{index + 1}</span>
+                          <span className="text-blue-600 font-semibold">
+                            {index + 1}
+                          </span>
                         </div>
                       </div>
                       <div className="flex-1">
-                        <h4 className="text-lg font-semibold text-gray-900">{topic}</h4>
+                        <h4 className="text-lg font-semibold text-gray-900">
+                          {topic}
+                        </h4>
                         <p className="text-gray-600 text-sm mt-1">
-                          Comprehensive coverage of {topic.toLowerCase()} concepts and practical applications.
+                          Comprehensive coverage of {topic.toLowerCase()}{" "}
+                          concepts and practical applications.
                         </p>
                       </div>
                       <Badge variant="outline">Module {index + 1}</Badge>
@@ -120,35 +147,48 @@ export default function CourseDetailTabs({ course, reviews, onAddReview }) {
         {activeTab === "reviews" && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h3 className="text-2xl font-bold text-gray-900">Student Reviews</h3>
-              <Button onClick={() => setShowReviewForm(!showReviewForm)} className="bg-blue-600 hover:bg-blue-700">
+              <h3 className="text-2xl font-bold text-gray-900">
+                Student Reviews
+              </h3>
+              <Button
+                onClick={() => setShowReviewForm(!showReviewForm)}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Review
               </Button>
             </div>
 
             {showReviewForm && (
-              <Card>
-                <CardContent className="p-6">
+              <Card className="p-0">
+                <CardContent className="p-[1rem]">
                   <form onSubmit={handleSubmitReview} className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Your Name</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Your Name
+                      </label>
                       <input
                         type="text"
                         value={reviewForm.name}
-                        onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })}
+                        onChange={(e) =>
+                          setReviewForm({ ...reviewForm, name: e.target.value })
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Rating
+                      </label>
                       <div className="flex space-x-1">
                         {[1, 2, 3, 4, 5].map((star) => (
                           <button
                             key={star}
                             type="button"
-                            onClick={() => setReviewForm({ ...reviewForm, rating: star })}
+                            onClick={() =>
+                              setReviewForm({ ...reviewForm, rating: star })
+                            }
                             className={`text-2xl ${star <= reviewForm.rating ? "text-yellow-400" : "text-gray-300"}`}
                           >
                             ★
@@ -157,20 +197,34 @@ export default function CourseDetailTabs({ course, reviews, onAddReview }) {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Your Review</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Your Review
+                      </label>
                       <textarea
                         value={reviewForm.review}
-                        onChange={(e) => setReviewForm({ ...reviewForm, review: e.target.value })}
+                        onChange={(e) =>
+                          setReviewForm({
+                            ...reviewForm,
+                            review: e.target.value,
+                          })
+                        }
                         rows={4}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required
                       />
                     </div>
                     <div className="flex space-x-3">
-                      <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
+                      <Button
+                        type="submit"
+                        className="bg-blue-600 hover:bg-blue-700"
+                      >
                         Submit Review
                       </Button>
-                      <Button type="button" variant="outline" onClick={() => setShowReviewForm(false)}>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setShowReviewForm(false)}
+                      >
                         Cancel
                       </Button>
                     </div>
@@ -182,7 +236,7 @@ export default function CourseDetailTabs({ course, reviews, onAddReview }) {
             <div className="space-y-4">
               {reviews.length > 0 ? (
                 reviews.map((review) => (
-                  <Card key={review.id}>
+                  <Card key={review.id} className={"p-0"}>
                     <CardContent className="p-6">
                       <div className="flex items-start space-x-4">
                         <div className="flex-shrink-0">
@@ -192,16 +246,35 @@ export default function CourseDetailTabs({ course, reviews, onAddReview }) {
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-2">
-                            <h4 className="font-semibold text-gray-900">{review.name}</h4>
-                            <div className="flex items-center">
-                              <div className="flex text-yellow-400">
-                                {[...Array(review.rating)].map((_, i) => (
-                                  <Star key={i} className="h-4 w-4 fill-current" />
-                                ))}
+                            <h4 className="font-semibold text-gray-900">
+                              {review.name}
+                            </h4>
+                            <div className="flex items-center space-x-3">
+                              <div className="flex items-center">
+                                <div className="flex text-yellow-400">
+                                  {[...Array(review.rating)].map((_, i) => (
+                                    <Star
+                                      key={i}
+                                      className="h-4 w-4 fill-current"
+                                    />
+                                  ))}
+                                </div>
+                                <span className="text-sm text-gray-500 ml-2">
+                                  {new Date(
+                                    review.created_at
+                                  ).toLocaleDateString()}
+                                </span>
                               </div>
-                              <span className="text-sm text-gray-500 ml-2">
-                                {new Date(review.created_at).toLocaleDateString()}
-                              </span>
+                              {isAuthenticated && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleDeleteClick(review.id)}
+                                  className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              )}
                             </div>
                           </div>
                           <p className="text-gray-700">{review.review}</p>
@@ -220,5 +293,5 @@ export default function CourseDetailTabs({ course, reviews, onAddReview }) {
         )}
       </div>
     </div>
-  )
+  );
 }
