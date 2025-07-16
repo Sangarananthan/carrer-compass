@@ -4,11 +4,20 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, MessageCircle, Mail, GraduationCap, X } from "lucide-react";
+import {
+  Menu,
+  MessageCircle,
+  Mail,
+  GraduationCap,
+  X,
+  LogOut,
+} from "lucide-react";
 import EnrollmentModal from "./enrollment-modal.jsx";
 import Image from "next/image.js";
+import { useAuthStore } from "../stores/authStore.js";
 
 export default function Header() {
+  const { isAuthenticated, logout } = useAuthStore();
   const [isMobile, setIsMobile] = useState(false);
   const [showEnrollmentModal, setShowEnrollmentModal] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -182,6 +191,14 @@ export default function Header() {
               Enroll Now
             </Button>
           )}
+          {!isMobile && isAuthenticated && (
+            <Button
+              onClick={logout}
+              className="text-sm font-medium transition-colors bg-blue-600  text-white hover:text-blue-700 hover:bg-gray-50"
+            >
+              Log Out
+            </Button>
+          )}
 
           {isMobile && (
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
@@ -235,11 +252,20 @@ export default function Header() {
                         setShowEnrollmentModal(true);
                         setIsSheetOpen(false);
                       }}
-                      className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 rounded-full font-medium transition-all duration-200 shadow-lg"
+                      className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 rounded-full font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
                     >
                       <GraduationCap className="h-4 w-4 mr-2" />
                       Enroll Now
                     </Button>
+                    {isAuthenticated && (
+                      <Button
+                        onClick={logout}
+                        className="w-full bg-red-50 border-red-200 text-red-700 hover:bg-red-100 hover:border-red-300 transition-all duration-200 py-3 rounded-full font-medium mt-4"
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Log Out
+                      </Button>
+                    )}
                   </div>
                 </nav>
               </SheetContent>

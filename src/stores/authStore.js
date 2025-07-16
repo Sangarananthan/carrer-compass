@@ -10,4 +10,9 @@ export const useAuthStore = create((set) => ({
       session: sessionData.session,
     });
   },
+  logout: async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+    set({ isAuthenticated: false, session: null });
+  },
 }));

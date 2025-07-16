@@ -1,11 +1,9 @@
-"use client"
+"use client";
 
-import Image from "next/image"
-import { Badge } from "@/components/ui/badge"
-import { Star, Clock, Users, Globe, BookOpen, Award } from "lucide-react"
-import Breadcrumb from "./breadcrumb.jsx"
-
-
+import Image from "next/image";
+import { Badge } from "@/components/ui/badge";
+import { Star, Clock, Users, Globe, BookOpen, Award } from "lucide-react";
+import Breadcrumb from "./breadcrumb.jsx";
 
 export default function CourseDetailHero({ course }) {
   return (
@@ -14,7 +12,7 @@ export default function CourseDetailHero({ course }) {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Image block - top on mobile */}
           <div className="relative order-0 lg:order-1">
-            <div className="relative h-80 lg:h-96 rounded-2xl overflow-hidden shadow-2xl">
+            <div className="relative rounded-2xl overflow-hidden aspect-[16/9]">
               <Image
                 src={
                   `${process.env.NEXT_PUBLIC_SUPABASE_URL}/${process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET}/${course.image_url}` ||
@@ -22,7 +20,7 @@ export default function CourseDetailHero({ course }) {
                 }
                 alt={course.name}
                 fill
-                className=" object-left object-fit"
+                className=" object-left object-contain "
                 priority
               />
             </div>
@@ -83,23 +81,6 @@ export default function CourseDetailHero({ course }) {
                   <div className="text-sm font-medium">Certificate</div>
                   <div className="text-xs">Included</div>
                 </div>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center">
-                <div className="flex text-yellow-400">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 fill-current" />
-                  ))}
-                </div>
-                <span className="text-lg font-semibold text-gray-900 ml-2">
-                  5.0
-                </span>
-              </div>
-              <div className="flex items-center text-gray-600">
-                <Users className="h-4 w-4 mr-1" />
-                <span>45+ Students Enrolled</span>
               </div>
             </div>
           </div>

@@ -18,28 +18,28 @@ function createEnrollmentEmailTemplate(data) {
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             line-height: 1.6;
-            color: #333;
-            background-color: #f8fafc;
+            color: #2d3748;
+            background-color: #f7fafc;
         }
         
         .container {
             max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 12px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
         }
         
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
+            background: #1a202c;
+            color: #ffffff;
+            padding: 32px;
             text-align: center;
         }
         
         .header h1 {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 600;
             margin-bottom: 8px;
         }
@@ -47,166 +47,203 @@ function createEnrollmentEmailTemplate(data) {
         .header p {
             opacity: 0.9;
             font-size: 16px;
+            font-weight: 400;
         }
         
         .content {
-            padding: 30px;
+            padding: 32px;
         }
         
         .section {
-            margin-bottom: 30px;
+            margin-bottom: 32px;
+        }
+        
+        .section:last-child {
+            margin-bottom: 0;
         }
         
         .section-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
-            color: #374151;
-            margin-bottom: 15px;
+            color: #1a202c;
+            margin-bottom: 16px;
             padding-bottom: 8px;
-            border-bottom: 2px solid #e5e7eb;
+            border-bottom: 1px solid #e2e8f0;
         }
         
         .info-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
+            gap: 16px;
         }
         
         .info-item {
             background: #f8fafc;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #3b82f6;
-            margin-bottom: 10px;
+            padding: 16px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
         }
         
         .info-item label {
-            font-weight: 600;
-            color: #374151;
+            font-weight: 500;
+            color: #4a5568;
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
         
         .info-item span {
-            color: #1f2937;
+            color: #1a202c;
             font-size: 16px;
+            font-weight: 400;
         }
         
         .course-highlight {
-            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 12px;
-            margin: 20px 0;
+            background: #edf2f7;
+            padding: 24px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            margin: 16px 0;
         }
         
         .course-highlight h3 {
-            font-size: 22px;
-            margin-bottom: 15px;
+            font-size: 20px;
+            margin-bottom: 16px;
             font-weight: 600;
+            color: #1a202c;
         }
         
         .course-details {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
+            gap: 12px;
+            margin-top: 16px;
         }
         
         .course-detail {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 12px;
-margin: 5px 0;
+            background: #ffffff;
+            padding: 16px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
             text-align: center;
         }
         
         .course-detail-label {
             font-size: 12px;
-            opacity: 0.8;
+            color: #718096;
             text-transform: uppercase;
+            font-weight: 500;
             letter-spacing: 0.5px;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
         }
         
         .course-detail-value {
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 500;
+            color: #1a202c;
             text-transform: capitalize;
         }
         
         .overview {
-            background: #f0f9ff;
+            background: #f0fff4;
             padding: 20px;
-            border-radius: 8px;
-            border-left: 4px solid #0ea5e9;
-            margin-top: 20px;
+            border-radius: 6px;
+            border: 1px solid #9ae6b4;
+            margin-top: 16px;
         }
         
         .overview h4 {
-            color: #0c4a6e;
-            margin-bottom: 10px;
+            color: #276749;
+            margin-bottom: 8px;
             font-size: 16px;
             font-weight: 600;
         }
         
         .overview p {
-            color: #374151;
-            line-height: 1.7;
+            color: #2d3748;
+            line-height: 1.6;
         }
         
         .message-section {
-            background: #fef3c7;
+            background: #fffbeb;
             padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
+            border-radius: 6px;
+            border: 1px solid #fbbf24;
+            margin-top: 16px;
         }
         
         .message-section h4 {
             color: #92400e;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             font-size: 16px;
             font-weight: 600;
         }
         
         .message-section p {
-            color: #374151;
+            color: #2d3748;
             font-style: italic;
+            line-height: 1.6;
         }
         
         .footer {
-            background: #1f2937;
-            color: #d1d5db;
-            padding: 25px;
+            background: #f8fafc;
+            color: #4a5568;
+            padding: 24px 32px;
             text-align: center;
+            border-top: 1px solid #e2e8f0;
         }
         
         .footer p {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            font-size: 14px;
         }
         
         .footer .timestamp {
-            font-size: 14px;
-            opacity: 0.7;
+            font-size: 13px;
+            color: #718096;
+            margin-top: 12px;
         }
         
         .priority-badge {
             display: inline-block;
-            background: #ef4444;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
+            background: #e53e3e;
+            color: #ffffff;
+            padding: 4px 8px;
+            border-radius: 4px;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 500;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-left: 10px;
+            margin-left: 8px;
+        }
+        
+        .action-item {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            padding: 16px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+        
+        .action-item strong {
+            color: #1a202c;
+            font-weight: 600;
         }
         
         @media (max-width: 640px) {
+            .container {
+                margin: 10px;
+                border-radius: 6px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 24px;
+            }
+            
             .info-grid {
                 grid-template-columns: 1fr;
             }
@@ -215,12 +252,7 @@ margin: 5px 0;
                 grid-template-columns: 1fr;
             }
             
-            .container {
-                margin: 10px;
-                border-radius: 8px;
-            }
-            
-            .content {
+            .footer {
                 padding: 20px;
             }
         }
@@ -229,13 +261,13 @@ margin: 5px 0;
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎓 Course Enrollment Inquiry</h1>
-            <p>New student interested in joining our courses</p>
+            <h1>Course Enrollment Inquiry</h1>
+            <p>New student application received</p>
         </div>
         
         <div class="content">
             <div class="section">
-                <h2 class="section-title">👤 Student Information</h2>
+                <h2 class="section-title">Student Information</h2>
                 <div class="info-grid">
                     <div class="info-item">
                         <label>Full Name</label>
@@ -257,7 +289,7 @@ margin: 5px 0;
             </div>
             
             <div class="section">
-                <h2 class="section-title">📚 Course Details</h2>
+                <h2 class="section-title">Course Details</h2>
                 <div class="course-highlight">
                     <h3>${data.courseName}</h3>
                     <div class="course-details">
@@ -275,8 +307,6 @@ margin: 5px 0;
                         </div>
                     </div>
                 </div>
-                
-               
             </div>
             
             ${
@@ -285,9 +315,9 @@ margin: 5px 0;
               data.message.toLowerCase() !== "none"
                 ? `
             <div class="section">
-                <h2 class="section-title">💬 Additional Message</h2>
+                <h2 class="section-title">Additional Message</h2>
                 <div class="message-section">
-                    <h4>Student's Message:</h4>
+                    <h4>Student's Message</h4>
                     <p>"${data.message}"</p>
                 </div>
             </div>
@@ -297,9 +327,15 @@ margin: 5px 0;
         </div>
         
         <div class="footer">
-            <p><strong>⚡ Action Required:</strong> Please respond within 24 hours</p>
-            <p><strong>📧 Reply to:</strong> ${data.email}</p>
-            <p><strong>📱 Contact:</strong> ${data.mobile}</p>
+            <div class="action-item">
+                <strong>Action Required:</strong> Please respond within 24 hours
+            </div>
+            <div class="action-item">
+                <strong>Reply to:</strong> ${data.email}
+            </div>
+            <div class="action-item">
+                <strong>Contact:</strong> ${data.mobile}
+            </div>
             <p class="timestamp">Submitted on: ${data.submittedAt}</p>
         </div>
     </div>
@@ -324,9 +360,9 @@ export async function POST(req) {
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to: process.env.EMAIL_USER,
-      replyTo: enrollmentData.email, 
-      subject: `🎓 New Course Enrollment: ${enrollmentData.courseName} - ${enrollmentData.name}`,
+      to: process.env.EMAIL_RECEIVER,
+      replyTo: enrollmentData.email,
+      subject: `New Course Enrollment: ${enrollmentData.courseName} - ${enrollmentData.name}`,
       html: emailHtml,
       text: `
 New Course Enrollment Inquiry

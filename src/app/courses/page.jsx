@@ -29,7 +29,6 @@ export default function CoursesPage() {
   const { courses, fetchCourses, removeCourse } = useCourseStore();
   const { isAuthenticated, session, setSession } = useAuthStore();
 
-  // Initialize session and categories
   useEffect(() => {
     const initializeData = async () => {
       try {
@@ -38,27 +37,24 @@ export default function CoursesPage() {
         setIsInitialized(true);
       } catch (error) {
         console.error("Error initializing data:", error);
-        setIsInitialized(true); // Set to true even on error to prevent infinite loading
+        setIsInitialized(true); 
       }
     };
     
     initializeData();
   }, [setSession, fetchCategories]);
 
-  // Handle URL parameters after categories are loaded
   useEffect(() => {
     if (isInitialized && categories.length > 0) {
       const urlParams = new URLSearchParams(window.location.search);
       const categoryParam = urlParams.get("category");
       
       if (categoryParam) {
-        // Ensure the category exists in the categories array
         const categoryExists = categories.find(cat => cat.id === categoryParam || cat.id === parseInt(categoryParam));
         if (categoryExists) {
           setSelectedCategoryFilter(categoryParam);
         } else {
           console.warn(`Category with id ${categoryParam} not found`);
-          // Optionally clear the invalid category parameter from URL
           const newUrl = new URL(window.location);
           newUrl.searchParams.delete("category");
           window.history.replaceState({}, "", newUrl);
@@ -67,14 +63,12 @@ export default function CoursesPage() {
     }
   }, [isInitialized, categories]);
 
-  // Fetch courses when search term or category filter changes
   useEffect(() => {
     if (isInitialized) {
       fetchCourses({ searchTerm, categoryFilter: selectedCategoryFilter });
     }
   }, [searchTerm, selectedCategoryFilter, fetchCourses, isInitialized]);
 
-  // Update URL when category filter changes (optional - for maintaining URL state)
   useEffect(() => {
     if (isInitialized) {
       const url = new URL(window.location);
@@ -108,7 +102,6 @@ export default function CoursesPage() {
     }
   };
 
-  // Show loading state while initializing
   if (!isInitialized) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -134,7 +127,7 @@ export default function CoursesPage() {
         }}
       />
       {isAuthenticated && (
-        <div className="flex w-fit gap-[1rem] items-center mb-8 p-4 ml-auto">
+        <div className="flex w-fit gap-[1rem] items-center  p-2 ml-auto">
           <Button
             onClick={() => {
               setSelectedCategoryModal(null);

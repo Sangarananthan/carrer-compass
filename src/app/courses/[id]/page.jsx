@@ -2,11 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import Header from "@/components/header";
 import CourseDetailHero from "@/components/course-detail-hero";
 import CourseDetailTabs from "@/components/course-detail-tabs";
 import CourseDetailSidebar from "@/components/course-detail-sidebar";
-import Footer from "@/components/footer";
 import { supabase } from "@/utils/supabase-client";
 
 export default function CourseDetailPage() {
@@ -18,7 +16,6 @@ export default function CourseDetailPage() {
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState(null);
 
-  // Get session and set up auth listener
   useEffect(() => {
     const getSession = async () => {
       const {
@@ -183,7 +180,6 @@ export default function CourseDetailPage() {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-3 gap-12">
-            {/* Main Content */}
             <div className="lg:col-span-2">
               <CourseDetailTabs
                 course={course}
@@ -194,7 +190,6 @@ export default function CourseDetailPage() {
               />
             </div>
 
-            {/* Sidebar */}
             <div className="lg:col-span-1">
               <CourseDetailSidebar course={course} onEnroll={handleEnroll} />
             </div>

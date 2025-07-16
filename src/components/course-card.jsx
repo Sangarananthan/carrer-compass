@@ -54,17 +54,14 @@ export default function CourseCard({
           </div>
         )}
       </div>
+      <CardContent className="flex flex-col flex-grow p-[1rem]">
+        <h3 className="text-xl font-bold text-gray-900 mb-3">{course.name}</h3>
 
-      <CardContent className="p-6">
-        <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
-          {course?.name}
-        </h3>
-
-        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-          {course?.overview}
+        <p className="text-gray-600 text-sm mb-[.5rem] line-clamp-3">
+          {course.overview}
         </p>
 
-        <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
+        <div className="grid grid-cols-2 gap-4 mb-[.5rem] text-sm">
           <div className="flex items-center text-gray-600">
             <Clock className="h-4 w-4 mr-2 text-blue-500" />
             {course?.duration_months} months
@@ -77,22 +74,9 @@ export default function CourseCard({
             <BookOpen className="h-4 w-4 mr-2 text-purple-500" />
             {course?.language}
           </div>
-
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center">
-              <div className="flex text-yellow-400">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-current" />
-                ))}
-              </div>
-              <span className="text-sm text-gray-600 ml-2">
-                5.0 (45 reviews)
-              </span>
-            </div>
-          </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 mt-auto">
           <Button
             variant="outline"
             onClick={() => onPreview(course?.id)}

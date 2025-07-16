@@ -101,12 +101,10 @@ export default function EnrollmentModal({
 
   // Initialize categories on mount
   useEffect(() => {
-    if (isOpen) {
-      fetchCategories();
-      fetchCourses();
-      setAvailableCourses(courses);
-    }
-  }, [isOpen]);
+    fetchCategories();
+    fetchCourses();
+    setAvailableCourses(courses);
+  }, [isOpen, onClose]);
 
   // Handle preselected course initialization
   useEffect(() => {
@@ -377,7 +375,6 @@ export default function EnrollmentModal({
                   </CardContent>
                 </Card>
               )}
-
             </div>
             <div className="space-y-6">
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -450,7 +447,6 @@ export default function EnrollmentModal({
                       onValueChange={(value) =>
                         handleInputChange("categoryId", value)
                       }
-                      disabled={!!preSelectedCourse}
                     >
                       <SelectTrigger className="mt-1">
                         <SelectValue placeholder="Select a category" />
@@ -475,7 +471,6 @@ export default function EnrollmentModal({
                       onValueChange={(value) =>
                         handleInputChange("courseId", value)
                       }
-                      disabled={!!preSelectedCourse || !formData.categoryId}
                     >
                       <SelectTrigger className="mt-1">
                         <SelectValue
