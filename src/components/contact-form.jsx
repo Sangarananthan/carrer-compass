@@ -14,7 +14,8 @@ import {
   User,
   Mail,
   Phone,
-  } from "lucide-react";
+  AlertCircle,
+} from "lucide-react";
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
@@ -29,21 +30,72 @@ export default function ContactForm() {
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    // Clear error when user starts typing
+    if (error) setError("");
+  };
+
+  const validateForm = () => {
+    if (!formData.name.trim()) {
+      setError("Please enter your full name");
+      return false;
+    }
+    if (!formData.email.trim()) {
+      setError("Please enter your email address");
+      return false;
+    }
+    if (!formData.mobile.trim()) {
+      setError("Please enter your mobile number");
+      return false;
+    }
+    if (!formData.message.trim()) {
+      setError("Please enter your message");
+      return false;
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError("Please enter a valid email address");
+      return false;
+    }
+
+    // Basic mobile validation (Indian format)
+    const mobileRegex = /^(\+91|91)?[6-9]\d{9}$/;
+    if (!mobileRegex.test(formData.mobile.replace(/\s/g, ""))) {
+      setError("Please enter a valid mobile number");
+      return false;
+    }
+
+    return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
     setLoading(true);
     setError("");
 
     try {
-      const response = await fetch("/api/contact", {
+      const response = await fetch("/api/contactUs", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          mobile: formData.mobile.trim(),
+          message: formData.message.trim(),
+        }),
       });
 
-      if (response.ok) {
+      const data = await response.json();
+
+      if (response.ok && data.success) {
         setSuccess(true);
         setFormData({
           name: "",
@@ -51,16 +103,32 @@ export default function ContactForm() {
           mobile: "",
           message: "",
         });
+        // Auto-hide success message after 5 seconds
         setTimeout(() => setSuccess(false), 5000);
       } else {
-        const data = await response.json();
-        setError(data.error || "Failed to send message");
+        setError(
+          data.message ||
+            data.error ||
+            "Failed to send message. Please try again."
+        );
       }
     } catch (err) {
-      setError("Network error. Please try again.");
+      console.error("Contact form error:", err);
+      setError("Network error. Please check your connection and try again.");
     } finally {
       setLoading(false);
     }
+  };
+
+  const resetForm = () => {
+    setSuccess(false);
+    setError("");
+    setFormData({
+      name: "",
+      email: "",
+      mobile: "",
+      message: "",
+    });
   };
 
   if (success) {
@@ -71,10 +139,14 @@ export default function ContactForm() {
           <h3 className="text-2xl font-bold text-gray-900 mb-2">
             Message Sent Successfully!
           </h3>
-          <p className="text-gray-600 mb-4">
+          <p className="text-gray-600 mb-6">
             Thank you for contacting us. We'll get back to you within 24 hours.
           </p>
-          <Button onClick={() => setSuccess(false)} variant="outline">
+          <Button
+            onClick={resetForm}
+            variant="outline"
+            className="bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-300"
+          >
             Send Another Message
           </Button>
         </CardContent>
@@ -84,7 +156,7 @@ export default function ContactForm() {
 
   return (
     <Card className="max-w-2xl mx-auto p-0 m-0 border-0 shadow-none">
-      <CardHeader className="text-center ">
+      <CardHeader className="text-center">
         <CardTitle className="text-2xl font-bold text-gray-900 flex items-center justify-center gap-2">
           <Send className="h-6 w-6 text-blue-600" />
           Send us a Message
@@ -99,6 +171,7 @@ export default function ContactForm() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
             <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
@@ -119,6 +192,7 @@ export default function ContactForm() {
               placeholder="Enter your full name"
               required
               className="h-12 text-base"
+              disabled={loading}
             />
           </div>
 
@@ -139,6 +213,7 @@ export default function ContactForm() {
                 placeholder="your.email@example.com"
                 required
                 className="h-12 text-base"
+                disabled={loading}
               />
             </div>
 
@@ -158,11 +233,11 @@ export default function ContactForm() {
                 placeholder="+91 XXXXX XXXXX"
                 required
                 className="h-12 text-base"
+                disabled={loading}
               />
             </div>
           </div>
 
-         
           <div className="space-y-2">
             <Label
               htmlFor="message"
@@ -178,12 +253,13 @@ export default function ContactForm() {
               rows={5}
               required
               className="text-base resize-none"
+              disabled={loading}
             />
           </div>
 
           <Button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white text-lg py-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02]"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white text-lg py-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:transform-none disabled:opacity-60"
             disabled={loading}
           >
             {loading ? (

@@ -81,7 +81,7 @@ export default function ContactInfo() {
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-lg transition-shadow">
+        {/* <Card className="hover:shadow-lg transition-shadow">
           <CardContent className="py-2 px-5">
             <div className="flex items-start space-x-4">
               <div className="p-3 bg-orange-100 rounded-full">
@@ -99,7 +99,7 @@ export default function ContactInfo() {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
     </div>
   );
