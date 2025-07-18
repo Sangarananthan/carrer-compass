@@ -9,7 +9,7 @@ export default function Footer() {
           <div>
             <div className="flex items-center space-x-2 mb-4">
               <GraduationCap className="h-8 w-8 text-blue-400" />
-              <span className="text-xl font-bold">CareerCompass</span>
+              <span className="text-xl font-bold">Career Compass</span>
             </div>
             <p className="text-gray-400 mb-4">
               Empowering careers through quality education and professional
@@ -65,35 +65,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Categories</h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link
-                  href="/courses?category=programming"
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
-                  Software Programming
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/courses?category=infrastructure"
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
-                  IT Infrastructure
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/courses?category=accounting"
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
-                  Accounting
-                </Link>
-              </li>
-            </ul>
-          </div>
+        
 
           <div>
             <h3 className="text-lg font-semibold mb-4">Support</h3>
